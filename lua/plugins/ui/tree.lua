@@ -97,7 +97,7 @@ return {
             symlink = "󱓻",
             bookmark = "",
             modified = "",
-            hidden = "󱙝",
+            hidden = "󰽙",
             git = {
               unstaged = "×",
               staged = "",
