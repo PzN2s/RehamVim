@@ -9,53 +9,18 @@ return {
     ---@diagnostic disable-next-line: assign-type-mismatch
     opts = function()
       local function getHeader()
-        local headers = {
-          [[
-  ████ ██████           █████      ██    RehamVim.
-     ███████████             █████                            
-     █████████ ███████████████████ ███   ███████████  
-    █████████  ███    █████████████ █████ ██████████████  
-   █████████ ██████████ █████████ █████ █████ ████ █████  
- ███████████ ███    ███ █████████ █████ █████ ████ █████ 
-██████  █████████████████████ ████ █████ █████ ████ ██████
-          ]],
-          [[
- ██╗ ██╗     ██╗   ██╗██╗███╗   ███╗   
-████████╗    ██║   ██║██║████╗ ████║   
-╚██╔═██╔╝    ██║   ██║██║██╔████╔██║   
-████████╗    ╚██╗ ██╔╝██║██║╚██╔╝██║   
-╚██╔═██╔╝     ╚████╔╝ ██║██║ ╚═╝ ██║██╗
- ╚═╝ ╚═╝       ╚═══╝  ╚═╝╚═╝     ╚═╝╚═╝
-          ]],
-          [[
-█████      ██   RehamVim.
-       █████                            
-        ████████ ███   ███████████  
-         ████████ █████ ██████████████  
-          ███████ █████ █████ ████ █████  
-           ██████ █████ █████ ████ █████ 
-            ████ █████ █████ ████ ██████
-          ]],
-        }
-
-        local idx = vim.g.dashboard_header_idx or math.random(1, #headers)
-        vim.g.dashboard_header_idx = (idx % #headers) + 1
-        return headers[idx]
+        return table.concat({
+          "",
+          "  ██████╗ ███████╗██╗  ██╗ █████╗ ███╗   ███╗",
+          "  ██╔══██╗██╔════╝██║  ██║██╔══██╗████╗ ████║",
+          "  ██████╔╝█████╗  ███████║███████║██╔████╔██║",
+          "  ██╔══██╗██╔══╝  ██╔══██║██╔══██║██║╚██╔╝██║",
+          "  ██║  ██║███████╗██║  ██║██║  ██║██║ ╚═╝ ██║",
+          "  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝",
+          "",
+          "  a quiet, personal Neovim",
+        }, "\n")
       end
-
-      local header_cmd
-      local is_windows = vim.fn.has("win32") == 1
-
-      if is_windows then
-        -- Windows version using PowerShell
-        header_cmd =
-          [[powershell.exe -NoProfile -Command "Write-Host ('$([char]27)[31m ▀ █ █ ▀ $([char]27)[0m $([char]27)[32m ▀ █ █ ▀ $([char]27)[0m $([char]27)[33m ▀ █ █ ▀ $([char]27)[0m $([char]27)[34m ▀ █ █ ▀ $([char]27)[0m $([char]27)[35m ▀ █ █ ▀ $([char]27)[0m $([char]27)[36m ▀ █ █ ▀ $([char]27)[0m'); Write-Host ('$([char]27)[31m ██   ██ $([char]27)[0m $([char]27)[32m ██   ██ $([char]27)[0m $([char]27)[33m ██   ██ $([char]27)[0m $([char]27)[34m ██   ██ $([char]27)[0m $([char]27)[35m ██   ██ $([char]27)[0m $([char]27)[36m ██   ██ $([char]27)[0m'); Write-Host ('$([char]27)[31m ▄ █ █ ▄ $([char]27)[0m $([char]27)[32m ▄ █ █ ▄ $([char]27)[0m $([char]27)[33m ▄ █ █ ▄ $([char]27)[0m $([char]27)[34m ▄ █ █ ▄ $([char]27)[0m $([char]27)[35m ▄ █ █ ▄ $([char]27)[0m $([char]27)[36m ▄ █ █ ▄ $([char]27)[0m')"]]
-      else
-        -- Linux/macOS version using printf
-        header_cmd =
-          [[printf "\033[31m ▀ █ █ ▀ \033[0m \033[32m ▀ █ █ ▀ \033[0m \033[33m ▀ █ █ ▀ \033[0m \033[34m ▀ █ █ ▀ \033[0m \033[35m ▀ █ █ ▀ \033[0m \033[36m ▀ █ █ ▀ \033[0m\n\033[31m ██   ██ \033[0m \033[32m ██   ██ \033[0m \033[33m ██   ██ \033[0m \033[34m ██   ██ \033[0m \033[35m ██   ██ \033[0m \033[36m ██   ██ \033[0m\n\033[31m ▄ █ █ ▄ \033[0m \033[32m ▄ █ █ ▄ \033[0m \033[33m ▄ █ █ ▄ \033[0m \033[34m ▄ █ █ ▄ \033[0m \033[35m ▄ █ █ ▄ \033[0m \033[36m ▄ █ █ ▄ \033[0m\n"]]
-      end
-      -- Then set your dashboard command to
 
       return {
         ---@class snacks.dashboard.Config
@@ -69,19 +34,19 @@ return {
           preset = {
             pick = nil,
             keys = {
-              { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-              { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-              { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-              { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+              { icon = "  ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+              { icon = "  ", key = "n", desc = "New File", action = ":ene | startinsert" },
+              { icon = "  ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+              { icon = "  ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
               {
-                icon = " ",
+                icon = "  ",
                 key = "c",
                 desc = "Config",
                 action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
               },
-              { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-              { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-              { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+              { icon = "  ", key = "s", desc = "Restore Session", section = "session" },
+              { icon = "  ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+              { icon = "  ", key = "q", desc = "Quit", action = ":qa" },
             },
             header = getHeader(),
           },
@@ -112,29 +77,7 @@ return {
           },
           sections = {
             { section = "header" },
-            {
-              pane = 2,
-              section = "terminal",
-              cmd = header_cmd,
-              height = 9,
-              align = "center",
-              padding = 1,
-            },
             { section = "keys", gap = 1, padding = 1 },
-            { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-            { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-            {
-              pane = 2,
-              icon = " ",
-              title = "Git Status",
-              section = "terminal",
-              enabled = false,
-              cmd = "git status --short --branch --renames",
-              height = 5,
-              padding = 1,
-              ttl = 5 * 60,
-              indent = 3,
-            },
             { section = "startup" },
           },
         },
