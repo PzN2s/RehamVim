@@ -45,7 +45,6 @@ lua/
   core/
     utils.lua          — run_code() and bootstrap_project() utilities
   plugins/
-    ai/opencode.lua    — opencode.nvim AI agent config
     core/              — lualine, store, treesitter, which-key
     dap/nvim-dap.lua   — DAP debugging keybindings + setup
     editing/           — markdown-preview, markview, refactoring
@@ -101,9 +100,6 @@ The `on_attach` in `lua/plugins/ui/tree.lua` maps `l` to open files (instead of 
 
 ### golangcilint exit code suppression
 `lua/plugins/lsp/go.lua` sets `ignore_exitcode = true` for `golangcilint` in nvim-lint. This is because golangci-lint v2 exits with code 3 on SIGINT (used by nvim-lint's cancel mechanism), which would produce spurious error notifications even though real lint results are still parsed from JSON stdout correctly.
-
-### OpenCode AI integration
-`lua/plugins/ai/opencode.lua` configures the opencode.nvim plugin extensively. Key prefix is `<leader>o`. The preferred picker is `snacks` and completion is `blink`. Default mode is `build`. Context includes diagnostics (warnings + errors), current file, selections, and files.
 
 ### Dap json_decode override
 `lua/plugins/dap/nvim-dap.lua` overrides `dap.ext.vscode.json_decode` to use plenary's json parser (which strips comments) instead of the default. This is required for `.vscode/launch.json` files that contain JSON comments.

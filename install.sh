@@ -50,7 +50,7 @@ install_safe() {
   # Try automatic install first.
   if ! $install_cmd; then
     echo -e "${RED}[ERROR] Automatic installation failed for: $pkgs${NC}"
-    echo -e "${YELLOW}This usually happens due to package conflicts (e.g. opencode vs opencode-bin).${NC}"
+    echo -e "${YELLOW}This usually happens due to package conflicts or unavailable package names.${NC}"
 
     while true; do
       echo -e "${PURPLE}How would you like to proceed?${NC}"
@@ -93,8 +93,8 @@ if ! command -v fzf &>/dev/null; then
   install_safe fzf
 fi
 
-echo -e "${YELLOW}[PKG] Installing external tools: opencode-bin, github-cli, ripgrep, fd, lazygit...${NC}"
-install_safe github-cli opencode-bin ripgrep fd lazygit
+echo -e "${YELLOW}[PKG] Installing external tools: github-cli, ripgrep, fd, lazygit...${NC}"
+install_safe github-cli ripgrep fd lazygit
 
 languages=("Go:go" "Rust:rustup" "Node.js:nodejs npm" "Python:python python-pip")
 

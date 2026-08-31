@@ -4,7 +4,7 @@ return {
   { "MeanderingProgrammer/render-markdown.nvim", enabled = false },
   {
     "OXY2DEV/markview.nvim",
-    ft = { "markdown", "Avante", "codecompanion", "opencode_output" },
+    ft = { "markdown" },
     keys = {
       {
         "<leader>m",
@@ -21,7 +21,7 @@ return {
 
     opts = {
       preview = {
-        filetypes = { "markdown", "Avante", "codecompanion", "opencode_output" },
+        filetypes = { "markdown" },
         ignore_buftypes = {},
       },
       max_length = 99999,

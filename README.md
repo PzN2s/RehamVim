@@ -1,87 +1,96 @@
-# RehamVim, **\# VIM.**
-
 <div align="center">
 
-![Last commit](https://img.shields.io/github/last-commit/PzN2s/RehamVim?style=for-the-badge&logo=git&color=000F10&logoColor=dark orange&labelColor=302D41)
-[![](https://img.shields.io/badge/Neovim-0.12.4+-blueviolet.svg?style=for-the-badge&color=000F10&logo=Neovim&logoColor=green&labelColor=302D41)](https://github.com/neovim/neovim)
+# RehamVim
+
+**A fast, minimal, personal Neovim experience — built on [LazyVim](https://lazyvim.github.io).**
+
+[![Neovim](https://img.shields.io/badge/Neovim-0.12%2B-blueviolet?style=for-the-badge&logo=neovim&logoColor=white&color=1e1e2e)](https://github.com/neovim/neovim)
+[![License](https://img.shields.io/github/license/PzN2s/RehamVim?style=for-the-badge&color=1e1e2e)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/PzN2s/RehamVim?style=for-the-badge&color=1e1e2e)](https://github.com/PzN2s/RehamVim)
 
 </div>
 
-A fast, personal Neovim configuration built on [LazyVim](https://lazyvim.github.io).
-Opinionated defaults, deep language support, and a hand-built quiet colorscheme.
+---
 
-## Features
+## ✨ Highlights
 
-- Single hand-built **Reham Mist** colorscheme (matches your desktop language)
-- LSP, debugging, testing & formatting for **Go**, **Rust**, **TS/JS**, **Python**
-- [opencode](https://opencode.ai) AI integration with `<leader>o`
-- `gh-dash` GitHub CLI extension with `<leader>gu`
-- Nix flake packaging (install as `rehamvim`)
+- **One quiet colorscheme** — [Reham Mist](#-reham-mist), hand-built to match the rest of the desktop.
+- **No AI** — no Copilot, no opencode, no assistants. Just you and the editor.
+- **Deep language support** — Go, Rust, TypeScript, Python out of the box.
+- **Isolated install** — run as its own `rehamvim` binary (Nix) with zero clashes.
+- **Curated tooling** — lazygit, telescope, treesitter, dap, lualine, and more.
+- **Plug & play** — clone, open, done. Lazy installs everything for you.
 
-## Themes
+---
 
-RehamVim ships a single hand-built colorscheme — **Reham Mist** — a quiet
-high-contrast monochrome palette that matches the rest of the desktop
-(black / near-white / cool grey with one soft accent).
+## 🎨 Reham Mist
 
-Themes automatically sync with terminal colors. Switch at any time with
-`:Telescope colorscheme` or `:colorscheme reham_mist`.
+The built-in colorscheme is a **quiet, high-contrast monochrome** palette:
+pure black, near-white text, and a cool grey ramp with a single soft accent.
 
-## Installation
+It was designed to sit naturally next to the surrounding desktop chrome —
+no noise, no neon.
+
+```lua
+:colorscheme reham_mist
+```
+
+Or switch live with `:Telescope colorscheme`.
+
+---
+
+## 🚀 Installation
 
 ### Prerequisites
 
-- Neovim >= 0.9.5
-- Tmux >= 3.2 (optional, for tmux integration)
-- `gcc`, `make`, `clang` for Mason to compile and build LSPs
+- **Neovim ≥ 0.12**
+- **git**, **curl**, and the compilers your LSPs need (`gcc`, `make`, `clang`)
+- For language LSPs: `npm`/`nodejs`, `go`, `rustup`, `python` — the installer lists them.
 
 > [!WARNING]
-> for language specific LSPs you need to install its stuff for example NodeJS related LSPs needs npm to be installed
-> list of needed language specific deps: `npm/nodejs`, `go`, `gcc`, `make`, `unzip`, `tar`.
+> Your current `~/.config/nvim` will be backed up, not destroyed.
 
-### Quick install
-
-Please follow these steps:
-
-1. **Preparation**:
-   - Ensure that Neovim is not running.
-   - Remove or move your current `nvim` directory (if it exists).
-
-> [!NOTE]
-> The installer takes care of Backing up your old nvim config or overwrites it.
-
-2. **Installation**:
-   - On Linux/MacOS:
+### One-liner (Linux/macOS)
 
 ```sh
- bash <(curl -s https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.sh)
 ```
 
-- On Windows (Powershell):
+### One-liner (Windows PowerShell)
 
-```ps1
- Invoke-WebRequest https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.ps1 -UseBasicParsing | Invoke-Expression
+```powershell
+Invoke-WebRequest https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.ps1 -UseBasicParsing | Invoke-Expression
 ```
 
-The installer will:
+The installer:
 
-- Detect your package manager (Linux: paru/yay, Windows: winget/choco)
-- Force install essential tools: opencode, ripgrep, fd, lazygit
-- Let you select which languages to install: Go, Rust, Node.js, Python
+1. Detects your package manager.
+2. Installs the essentials: `ripgrep`, `fd`, `lazygit`, `gh`.
+3. Lets you pick languages to support.
+4. Backs up and clones the config into place.
 
-### Nix/OS Installation
-
-Since i have flake.nix file we can install it with some ways:
-
-- test it with `nix run`:
+### Manual
 
 ```sh
+git clone https://github.com/PzN2s/RehamVim ~/.config/nvim
+nvim
+```
+
+Lazy.nvim fetches and sets up every plugin on first launch.
+
+---
+
+## ❄️ Nix
+
+RehamVim ships a `flake.nix` and exposes an isolated `rehamvim` binary — no
+interference with your system Neovim.
+
+```sh
+# Try without installing
 nix run github:PzN2s/RehamVim
 ```
 
-- the flakes way:
-
-1. in your flake.nix:
+Or add it to your own flake:
 
 ```nix
 {
@@ -90,134 +99,77 @@ nix run github:PzN2s/RehamVim
     rehamvim.url = "github:PzN2s/RehamVim";
   };
 
-  # ... inside your outputs
+  home.packages = [
+    inputs.rehamvim.packages.${pkgs.system}.default
+  ];
 }
 ```
 
-2. add it to your home.packages:
-
-```nix
-home.packages = [
-  inputs.rehamvim.packages.${pkgs.system}.default
-];
-```
-
-After switching your home-manager config, run `rehamvim` in your terminal.
-
-- installing it system-wide:
-
-1. add it as flakes input as shown above
-
-2. add it to your `configuration.nix`:
-
-```nix
-environment.systemPackages = [
-  inputs.rehamvim.packages.${pkgs.system}.default
-];
-```
+After switching, run `rehamvim` in your terminal.
 
 > [!NOTE]
-> Currently the config goes into your `/nix/store` and we have an isolated binary `rehamvim`
+> The config lives in your `/nix/store`; the `rehamvim` binary is the entry point.
 
-### Manual Installation
+---
 
-If you prefer manual setup:
+## 🧭 Key Bindings
 
-#### Package Managers
+| Keys | Action |
+| --- | --- |
+| `<leader>e` | Toggle file tree |
+| `<leader>f` | Find files (Telescope) |
+| `<leader>u` | UI-related commands |
+| `<leader>t` | Terminal |
+| `<leader>T` | Tests |
+| `<leader>gu` | GitHub dashboard |
+| `gcc` | Toggle comment |
+| `<RightMouse>` | Smart context menu |
 
-```sh
-# Arch Linux with yay:
-yay -S opencode ripgrep fd lazygit go rust nodejs python
+See the full set with `:Telescope keymaps` or `<leader>sk`.
 
-# Arch Linux with paru:
-paru -S opencode ripgrep fd lazygit go rust nodejs python
+---
 
-# Windows with winget:
-winget install opencode ripgrep fd lazygit Go.Go Rustlang.Rust OpenJS.NodeJS Python.Python.3
+## 🗂️ Supported Languages
 
-# Windows with Chocolatey:
-choco install opencode ripgrep fd lazygit go rust nodejs python
+| Language | LSP | Debug | Test | Format |
+| --- | --- | --- | --- | --- |
+| Go | ✅ | ✅ | ✅ | ✅ |
+| Rust | ✅ | ✅ | ✅ | ✅ |
+| TypeScript / JS | ✅ | — | — | ✅ |
+| Python | ✅ | — | — | ✅ |
+
+---
+
+## 🌳 Project Layout
+
+```
+~/.config/nvim
+├── init.lua
+├── flake.nix            # Nix packaging (isolated rehamvim binary)
+├── colors/              # Reham Mist colorscheme
+├── lua/
+│   ├── config/          # lazy, options, keymaps, autocmds
+│   ├── core/            # utils
+│   └── plugins/
+│       ├── core/        # lualine, treesitter, which-key
+│       ├── dap/         # debugging
+│       ├── editing/     # markdown, refactoring
+│       ├── lsp/         # language servers
+│       ├── testing/     # neotest
+│       ├── tools/       # lazygit, mason, gh-dash, cord
+│       └── ui/          # bufferline, telescope, trouble, tree
+└── lazy-lock.json       # pinned plugin versions
 ```
 
-#### Neovim Setup
-
-1. Clone this repository:
-
-```bash
-git clone https://github.com/PzN2s/RehamVim ~/.config/nvim
-```
-
-2. Start Neovim:
-
-```bash
-nvim
-```
-
-3. Lazy will automatically install all plugins and dependencies.
-
-## Some features need a manual setup.
-
-Currently i supported [gh-dash](https://gh-dash.dev) it have a [port](https://github.com/johnseth97/gh-dash.nvim) for neovim so its very good to add.
-
-### Prerequisites:
-
-its a github-cli plugin so we need to install `gh` first:
-
-```sh
-# Arch with yay
-yay -S github-cli
-
-# Arch with paru
-paru -S github-cli
-
-# windows with winget
-winget install Github.Cli
-
-# windows with Chocolatey
-choco install Github.cli
-```
-
-> [!WARNING]
-> you need to login with `gh auth login` with your github account to install any `gh` extension
-
-### gh-dash installation
-
-first we need to install it by `gh extension`
-
-```sh
-gh extension install dlvhdr/gh-dash
-```
-
-now you can test it in your terminal with:
-
-```sh
-gh dash
-```
-
-and in NeoVim with: `<leader>gu`
-
-## Supported Languages
-
-- **Go**: LSP, debugging, testing, formatting
-- **Rust**: LSP, debugging, cargo integration
-- **TypeScript/JavaScript**: LSP, formatting
-- **Python**: LSP, linting (install python-lsp-server)
-
-## Documentation
-
-Refer to [LazyVim documentation](https://lazyvim.github.io/installation) for general usage.
-
-### Key Bindings
-
-- `<leader>e`: Toggle nvim-tree
-- `<leader>o`: OpenCode commands
-- `<leader>f`: Telescope find files
-- `<leader>u`: UI related commands
+---
 
 ## 🤝 Contributing
 
-Contributions welcome! Please open issues or pull requests.
+Found a bug or want something better? Open an issue or a pull request.
+Keep it minimal, keep it fast — that's the spirit of this config.
+
+---
 
 ## 📄 License
 
-Apache v2 License - see LICENSE file for details.
+Apache-2.0 — see [LICENSE](LICENSE). Copyright © 2026 Reham.

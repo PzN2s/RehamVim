@@ -6,19 +6,15 @@
 
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    opencode-flake.url = "github:aodhanhayter/opencode-flake";
-
   };
 
-  outputs = { self, nixpkgs, opencode-flake }:
+  outputs = { self, nixpkgs }:
 
     let
 
       system = "x86_64-linux";
 
       pkgs = nixpkgs.legacyPackages.${system};
-
-      opencode = opencode-flake.packages.${system}.default;
 
       configFiles = pkgs.stdenv.mkDerivation {
         name = "rehamvim-config";
@@ -47,8 +43,6 @@
         nil
 
         stylua
-
-        opencode
 
       ];
 
