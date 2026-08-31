@@ -4,9 +4,28 @@
 
 ![Last commit](https://img.shields.io/github/last-commit/PzN2s/RehamVim?style=for-the-badge&logo=git&color=000F10&logoColor=dark orange&labelColor=302D41)
 [![](https://img.shields.io/badge/Neovim-0.12.4+-blueviolet.svg?style=for-the-badge&color=000F10&logo=Neovim&logoColor=green&labelColor=302D41)](https://github.com/neovim/neovim)
-<img src="preview.png">
 
 </div>
+
+A fast, personal Neovim configuration built on [LazyVim](https://lazyvim.github.io).
+Opinionated defaults, deep language support, and a hand-built quiet colorscheme.
+
+## Features
+
+- Single hand-built **Reham Mist** colorscheme (matches your desktop language)
+- LSP, debugging, testing & formatting for **Go**, **Rust**, **TS/JS**, **Python**
+- [opencode](https://opencode.ai) AI integration with `<leader>o`
+- `gh-dash` GitHub CLI extension with `<leader>gu`
+- Nix flake packaging (install as `rehamvim`)
+
+## Themes
+
+RehamVim ships a single hand-built colorscheme — **Reham Mist** — a quiet
+high-contrast monochrome palette that matches the rest of the desktop
+(black / near-white / cool grey with one soft accent).
+
+Themes automatically sync with terminal colors. Switch at any time with
+`:Telescope colorscheme` or `:colorscheme reham_mist`.
 
 ## Installation
 
@@ -176,15 +195,6 @@ gh dash
 ```
 
 and in NeoVim with: `<leader>gu`
-
-## Themes
-
-RehamVim ships a single hand-built colorscheme — **Reham Mist** — a quiet
-high-contrast monochrome palette that matches the rest of the desktop
-(black / near-white / cool grey with one soft accent).
-
-Themes automatically sync with terminal colors. Switch at any time with
-`:Telescope colorscheme` or `:colorscheme reham_mist`.
 
 ## Supported Languages
 
