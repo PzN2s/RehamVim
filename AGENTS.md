@@ -141,6 +141,9 @@ The `on_attach` in `lua/mods/view/tree.lua` maps `l` to open files (instead of d
 ### Notifications: snacks only
 `lua/mods/view/notifications.lua` disables `folke/noice.nvim` (`enabled = false`) — notifications come from `snacks.notifier` alone. Running both produced duplicate toasts. Keep noice disabled.
 
+### Bug Delta (feature)
+`lua/boot/bugdelta.lua` (loaded last in `loader.lua`) diffs diagnostics after a save: `BufWritePre` snapshots the current buffer's diagnostics, `BufWritePost` (+400ms to let the LSP settle) reports newly introduced errors/warnings via `Snacks.notify` and a lualine `Δ+N`/`Δ0` marker (`vim.g.reham_bugdelta`). Commands: `:RehamBugDelta` (analyze now), `:RehamBugDeltaToggle` (on/off auto), `:RehamBugDeltaList` (loclist of new diagnostics). If no snapshot exists yet, inspection just establishes a baseline for the next save. Keep `auto`/`enabled` semantics: disabled = no autocmd work at all.
+
 ### Smart menu triggers
 `lua/mods/view/menu.lua` (`nvzone/menu`) is `lazy = true` and must declare `cmd = { "OpenSmartMenu" }` — the user command is defined inside its `config()`, so without a trigger the plugin never loads and the command is missing (`<leader>cp` / right-click break). Keep it lazy.
 

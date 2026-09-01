@@ -55,3 +55,4 @@ require("lazy").setup({
 require("boot.opts")
 require("boot.keys")
 require("boot.events")
+require("boot.bugdelta")
