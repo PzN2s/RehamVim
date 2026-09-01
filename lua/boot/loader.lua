@@ -51,8 +51,12 @@ require("lazy").setup({
 })
 
 -- Boot layer: apply options, keymaps and autocmds after lazy.nvim / LazyVim
--- have applied their defaults, so our custom values win.
-require("boot.opts")
-require("boot.keys")
-require("boot.events")
-require("boot.bugdelta")
+-- have applied their defaults, so our custom values win. Each module loads in
+-- isolation so a failure in one never stops the others (or hides their commands).
+local boot_modules = { "boot.opts", "boot.keys", "boot.events", "boot.bugdelta" }
+for _, mod in ipairs(boot_modules) do
+  local ok, err = pcall(require, mod)
+  if not ok then
+    vim.notify("boot module failed: " .. mod .. "\n" .. tostring(err), vim.log.levels.ERROR)
+  end
+end
