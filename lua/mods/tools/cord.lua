@@ -12,7 +12,7 @@ return {
       tooltip = "RehamVim - The Superior Text Editor",
     },
     display = {
-      theme = "auto",
+      theme = "atom",
       flavor = "accent",
       show_time = true,
       show_repository = true,
