@@ -31,7 +31,7 @@ way of the rest of your system.
 
 | | Feature |
 | --- | --- |
-| ▫ | **Reham theme family** — six hand-built colorschemes tuned for long sessions. |
+| ▫ | **Reham theme family** — twenty-three hand-built colorschemes, nothing third-party. |
 | ▫ | **No AI** — no Copilot, no assistants, no noise. |
 | ▫ | **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
 | ▫ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
@@ -74,8 +74,10 @@ and syntax more distinct colors:
 | `reham_matcha` | Pure black, calm matcha-green |
 | `reham_peach` | Pure black, warm apricot & peach |
 
-Pick one any time with `<leader>uC`, `:colorscheme <name>`, or
-`:Telescope colorscheme`. Your choice is remembered for next session.
+Pick one any time with `<leader>uC` or `:colorscheme <name>`. Your choice is
+remembered for next session. Only the Reham family ships in this config — all
+third-party colorscheme plugins are removed and the ones LazyVim bundles
+(tokyonight, catppuccin) are disabled.
 
 ---
 
@@ -197,7 +199,7 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 ~/.config/nvim
 ├── init.lua              # entry point
 ├── flake.nix             # isolated rehamvim binary
-├── colors/               # Reham Mist colorscheme
+├── colors/               # Reham theme family (23 hand-built themes)
 ├── lua/
 │   ├── boot/             # startup wiring
 │   │   ├── loader.lua    # lazy.nvim bootstrap + mods.* imports
