@@ -256,11 +256,12 @@ function M.health()
         lines[#lines + 1] = "  NOTE: no LSP configured for this filetype — Bug Delta only reports issues filetypes with one"
       end
     end
-    vim.fn.writefile(lines, "/tmp/reham_bd_health.txt")
-    vim.cmd("new /tmp/reham_bd_health.txt")
+    vim.cmd("enew")
+    vim.api.nvim_buf_set_name(0, "Bug Delta · health")
     vim.api.nvim_set_option_value("modifiable", true, {})
     vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
     vim.api.nvim_set_option_value("modifiable", false, {})
+    vim.api.nvim_win_set_option(0, "number", false)
   end
 
   local clients, errs, warns = collect()
