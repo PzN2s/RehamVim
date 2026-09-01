@@ -21,6 +21,8 @@ local snapshots = {} -- bufnr -> { map = {}, errors = 0, warns = 0 }
 local news = {} -- bufnr -> list of newly-introduced diagnostics
 local pending = {} -- bufnr -> true while waiting for diagnostics to settle
 
+local EMPTY = { map = {}, errors = 0, warns = 0 }
+
 local group = vim.api.nvim_create_augroup("reham_bugdelta", { clear = true })
 
 local function current_buf()
@@ -124,8 +126,15 @@ function M.run(bufnr, run_opts)
     notify(severity(new_errors, new_warns), "This save introduced " .. table.concat(parts, " and "))
   elseif fixed > 0 then
     notify("info", "Fixed " .. fixed .. " issue" .. (fixed > 1 and "s" or "") .. " — the file is clean now")
-  elseif run_opts.manual or opts.report_clean then
-    notify("info", "No new issues introduced by the last changes")
+  else
+    -- Never claim "clean" silently when the file still has outstanding issues.
+    local existing = cur.errors + cur.warns
+    if existing > 0 then
+      notify("info", "No new issues introduced — the file already has " .. existing .. " issue"
+        .. (existing > 1 and "s" or ""))
+    elseif run_opts.manual or opts.report_clean then
+      notify("info", "No new issues introduced by the last changes")
+    end
   end
 
   return changed
@@ -136,23 +145,14 @@ end
 function M.inspect(bufnr)
   bufnr = bufnr or current_buf()
   local pre = snapshots[bufnr]
-  if pre then
-    vim.api.nvim_buf_call(bufnr, function()
-      M.run(bufnr, { manual = true })
-    end)
-    return
+  if not pre then
+    -- No baseline yet: diff against empty so `:RehamBugDelta` always reports
+    -- whatever issues the file currently has.
+    snapshots[bufnr] = vim.deepcopy(EMPTY)
   end
-  local _, cur = snapshot(bufnr)
-  snapshots[bufnr] = cur
-  news[bufnr] = {}
-  vim.g.reham_bugdelta = { errors = cur.errors, warns = cur.warns, fixed = 0, time = os.time() }
-  local n = cur.errors + cur.warns
-  if n > 0 then
-    notify("warn", "Baseline set — file currently has " .. n .. " issue"
-      .. (n > 1 and "s" or "") .. "; the next save will be diffed against it")
-  else
-    notify("info", "File is clean — baseline set; the next save will be diffed against it")
-  end
+  vim.api.nvim_buf_call(bufnr, function()
+    M.run(bufnr, { manual = true })
+  end)
 end
 
 ---After a save, keep polling until the LSP diagnostics settle (or give up),
@@ -201,7 +201,13 @@ end
 vim.api.nvim_create_autocmd("BufWritePre", {
   group = group,
   callback = function(args)
-    take_snapshot(args.buf)
+    -- First save: start from an EMPTY baseline so everything already in the
+    -- buffer (errors included) is reported, instead of silently absorbing it.
+    if snapshots[args.buf] then
+      take_snapshot(args.buf)
+    else
+      snapshots[args.buf] = vim.deepcopy(EMPTY)
+    end
   end,
 })
 
