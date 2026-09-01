@@ -138,6 +138,9 @@ The `on_attach` in `lua/mods/view/tree.lua` maps `l` to open files (instead of d
 - Deleting LazyVim's `<leader>l` / `<leader>L` is now guarded (a bare `vim.keymap.del` throws `E31` when the mapping does not exist).
 - `<leader>Pc` calls `LazyVim.news.changelog()` — the `:LazyVimChangelog` command no longer exists in current LazyVim.
 
+### Notifications: snacks only
+`lua/mods/view/notifications.lua` disables `folke/noice.nvim` (`enabled = false`) — notifications come from `snacks.notifier` alone. Running both produced duplicate toasts. Keep noice disabled.
+
 ### Smart menu triggers
 `lua/mods/view/menu.lua` (`nvzone/menu`) is `lazy = true` and must declare `cmd = { "OpenSmartMenu" }` — the user command is defined inside its `config()`, so without a trigger the plugin never loads and the command is missing (`<leader>cp` / right-click break). Keep it lazy.
 
