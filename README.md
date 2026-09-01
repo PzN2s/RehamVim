@@ -77,6 +77,26 @@ Invoke-WebRequest https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.
 The installer detects your package manager, installs the essentials
 (`ripgrep`, `fd`, `lazygit`, `gh`), and asks which languages you want.
 
+Need to inspect before you commit, or diagnose an existing setup?
+
+```sh
+# diagnose an existing install without changing anything
+bash install.sh --doctor
+
+# preview exactly what will run, executing nothing
+bash install.sh --dry-run
+
+# non-interactive install (CI / scripting)
+bash install.sh --unattended
+```
+
+Removing RehamVim later is a one-liner (config is backed up first):
+
+```sh
+bash uninstall.sh            # remove config + data + state + cache
+bash uninstall.sh --remove-langs   # ...and installed language toolchains
+```
+
 **Manual**
 
 ```sh
@@ -150,21 +170,27 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 
 ```
 ~/.config/nvim
-├── init.lua
-├── flake.nix            # isolated rehamvim binary
-├── colors/              # Reham Mist colorscheme
+├── init.lua              # entry point
+├── flake.nix             # isolated rehamvim binary
+├── colors/               # Reham Mist colorscheme
 ├── lua/
-│   ├── config/          # lazy, options, keymaps, autocmds
-│   ├── core/            # utils
-│   └── plugins/
-│       ├── core/        # lualine, treesitter, which-key
-│       ├── dap/         # debugging
-│       ├── editing/     # markdown, refactoring
-│       ├── lsp/         # language servers
-│       ├── testing/     # neotest
-│       ├── tools/       # lazygit, mason, gh-dash, cord
-│       └── ui/          # bufferline, telescope, trouble, tree
-└── lazy-lock.json       # pinned plugin versions
+│   ├── boot/             # startup wiring
+│   │   ├── loader.lua    # lazy.nvim bootstrap + mods.* imports
+│   │   ├── opts.lua      # neovim options
+│   │   ├── events.lua    # autocmds
+│   │   ├── keys.lua      # keymaps
+│   │   ├── profile.lua   # Session Profiles (auto-detect / override)
+│   │   └── extras.lua    # LazyVim extras
+│   ├── lib/              # shared utils
+│   └── mods/             # plugin specs by domain
+│       ├── view/         # dashboard, tree, telescope, trouble, menu
+│       ├── status/       # lualine, which-key, colorscheme
+│       ├── edit/         # markdown, refactoring, markview
+│       ├── langs/        # self-contained per-language modules
+│       ├── vcs/          # lazygit, gh-dash, godoc
+│       ├── tools/        # mason, cord, term, typr
+│       └── debug/        # DAP
+└── lazy-lock.json        # pinned plugin versions
 ```
 
 ---
