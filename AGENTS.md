@@ -97,6 +97,13 @@ return {
 
 ## Important Gotchas & Quirks
 
+### NVIM_APPNAME / config path
+The flake sets `NVIM_APPNAME="rehamvim"` for the `rehamvim` app, but the real
+config lives at `~/.config/nvim`. A symlink `~/.config/rehamvim -> ~/.config/nvim`
+makes both entry points load the same config. Note `NVIM_APPNAME` also remaps the
+plugin/data dir (`~/.local/share/rehamvim`), so the first `rehamvim` launch clones
+plugins into a separate store once. Plain `nvim` remains the primary entry.
+
 ### Colorscheme persistence
 `lua/boot/events.lua` writes the current colorscheme name to `stdpath("data")/last_colorscheme` on `ColorScheme` event. `lua/mods/status/colorscheme.lua` reads this file at load time, only accepts names matching `^reham_`, and defaults to `reham_mist`. All themes share a highlight engine in `lua/colorschemes/reham.lua` (`require("colorschemes.reham").define(name, palette)`); each `colors/reham_*.lua` only supplies its palette. The `<leader>uC` picker in `lua/boot/keys.lua` is filtered to `^reham_` and is a **custom floating list** (not `vim.ui.select`): a `▸` arrow marks the theme under the cursor and moves with `j`/`k`/`<Up>`/`<Down>` (wraps around); `<CR>` applies it, `q`/`<Esc>` closes, and it starts on the currently-active theme. The buffer is `modifiable=false` and the `▸` arrow is drawn with a **virt_text extmark** — never edit the buffer (stray key bytes like `<b8>` used to get INSERTED when the buffer was writable). Mappings are set for both normal and insert modes.
 
