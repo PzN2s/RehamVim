@@ -58,7 +58,7 @@ return {
       renderer = {
         highlight_git = true,
         root_folder_label = function(path)
-          return "  " .. vim.fn.fnamemodify(path, ":t")
+          return "☕︎  " .. vim.fn.fnamemodify(path, ":t")
         end,
         indent_width = 2,
         icons = {
