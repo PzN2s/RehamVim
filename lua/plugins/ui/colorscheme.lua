@@ -46,10 +46,6 @@ return {
     opts = {},
   },
   {
-    "nyoom-engineering/oxocarbon.nvim",
-    lazy = true,
-  },
-  {
     "catppuccin/nvim",
     name = "catppuccin",
     lazy = true,
@@ -71,9 +67,5 @@ return {
   {
     "dasupradyumna/midnight.nvim",
     lazy = true,
-  },
-  {
-    "RRethy/base16-nvim",
-    enabled = false,
   },
 }

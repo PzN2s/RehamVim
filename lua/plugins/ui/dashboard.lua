@@ -1,9 +1,5 @@
 return {
   {
-    "nvimdev/dashboard-nvim",
-    enabled = false,
-  },
-  {
     "folke/snacks.nvim",
     enabled = true,
     ---@diagnostic disable-next-line: assign-type-mismatch
