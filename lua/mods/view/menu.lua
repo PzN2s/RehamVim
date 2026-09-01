@@ -5,6 +5,7 @@ return {
   {
     "nvzone/menu",
     lazy = true,
+    cmd = { "OpenSmartMenu" },
     config = function()
       local menu = require("menu")
 

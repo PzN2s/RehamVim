@@ -127,6 +127,20 @@ The `on_attach` in `lua/mods/view/tree.lua` maps `l` to open files (instead of d
 ### Shell is fish, not bash
 `lua/boot/opts.lua` sets `vim.opt.shell = "fish"` on non-Windows. This affects how shell commands (including code runner) execute. The `shellcmdflag = "-c"` and empty quotes handle fish's CLI interface.
 
+### Boot layer loads AFTER `lazy.setup`
+`lua/boot/loader.lua` requires `boot.opts`, `boot.keys` and `boot.events` at the **end of `lazy.setup()`** (`init.lua` only requires `boot.loader`). This lets our custom options/keymaps/autocmds override LazyVim defaults. Do not move them before `setup()` (LazyVim would re-apply its own keymaps/options afterwards), and do not assume `boot.keys` works without this wiring — that bug left every custom keymap (`<leader>P*`, `<leader>uC`, right-click menu) silently dead.
+
+### Update checker disabled (startup cost)
+`loader.lua` sets `checker = { enabled = false }`. With it enabled, lazy.nvim ran an update check at every startup that git-fetches **each** installed plugin — ~30s startup and occasional hangs (exit hangs after `qa!`) on this machine. Startup is ~50ms now. Update manually with `:Lazy check` / `:Lazy update`.
+
+### `boot.keys` mapping subtleties
+- `<leader>` is stored expanded in keymap tables (`<Space>Pp`, not `<leader>Pp`), so `nvim_get_keymap("n")` returns `<Space>...` lhs, and `vim.fn.maparg` does **not** expand `<leader>`. Always check through `vim.keycode("<leader>Xx")`.
+- Deleting LazyVim's `<leader>l` / `<leader>L` is now guarded (a bare `vim.keymap.del` throws `E31` when the mapping does not exist).
+- `<leader>Pc` calls `LazyVim.news.changelog()` — the `:LazyVimChangelog` command no longer exists in current LazyVim.
+
+### Smart menu triggers
+`lua/mods/view/menu.lua` (`nvzone/menu`) is `lazy = true` and must declare `cmd = { "OpenSmartMenu" }` — the user command is defined inside its `config()`, so without a trigger the plugin never loads and the command is missing (`<leader>cp` / right-click break). Keep it lazy.
+
 ---
 
 ## Code Style

@@ -1,11 +1,14 @@
 ---@type LazyVimConfig
 
-vim.keymap.del("n", "<leader>l")
-vim.keymap.del("n", "<leader>L")
+for _, lhs in ipairs({ "<leader>l", "<leader>L" }) do
+  if vim.fn.maparg(vim.keycode(lhs), "n") ~= "" then
+    vim.keymap.del("n", lhs)
+  end
+end
 
 vim.keymap.set("n", "<leader>Pl", "<cmd>Lazy<cr>", { desc = "Lazy" })
 vim.keymap.set("n", "<leader>PL", "<cmd>LazyExtras<cr>", { desc = "Lazy Extras" })
-vim.keymap.set("n", "<leader>Pc", "<cmd>LazyVimChangelog<cr>", { desc = "LazyVim Changelog" })
+vim.keymap.set("n", "<leader>Pc", "<cmd>lua LazyVim.news.changelog()<cr>", { desc = "LazyVim Changelog" })
 vim.keymap.set("n", "<leader>Pp", function()
   local profile = require("boot.profile")
   local items = profile.available()
@@ -15,7 +18,6 @@ vim.keymap.set("n", "<leader>Pp", function()
     end
   end)
 end, { desc = "Switch Profile" })
-vim.keymap.set("n", "<leader>Pp", function() end, { desc = "+Profile" })
 vim.keymap.set("n", "<leader>Pb", function()
   require("lib.utils").bootstrap_project()
 end, { desc = "Bootstrap Project" })
@@ -58,7 +60,10 @@ vim.keymap.set({ "n", "v", "i" }, "<RightMouse>", function()
     return vim.cmd.exec('"normal! \\<RightMouse>"')
   end
 
-  require("menu.utils").delete_old_menus()
+  local ok_menu, _ = pcall(require, "menu.utils")
+  if ok_menu then
+    require("menu.utils").delete_old_menus()
+  end
 
   vim.cmd.exec('"normal! \\<RightMouse>"')
 

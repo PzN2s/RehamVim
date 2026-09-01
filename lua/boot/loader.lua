@@ -32,8 +32,7 @@ require("lazy").setup({
   },
   install = { colorscheme = { "reham_mist" } },
   checker = {
-    enabled = true,
-    notify = false,
+    enabled = false,
   },
   performance = {
     rtp = {
@@ -50,3 +49,9 @@ require("lazy").setup({
     },
   },
 })
+
+-- Boot layer: apply options, keymaps and autocmds after lazy.nvim / LazyVim
+-- have applied their defaults, so our custom values win.
+require("boot.opts")
+require("boot.keys")
+require("boot.events")
