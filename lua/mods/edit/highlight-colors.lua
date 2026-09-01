@@ -2,7 +2,7 @@
 -- NOTE: Highlight colors within Neovim (hex, rgb, hsl, oklch*, tailwind, etc.)
 return {
   "brenoprata10/nvim-highlight-colors",
-  lazy = false,
+  event = "VeryLazy",
   opts = {
     render = "background",
     enable_hex = true,

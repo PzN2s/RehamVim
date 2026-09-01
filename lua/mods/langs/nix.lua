@@ -1,5 +1,5 @@
 ---@type LazySpec
--- NOTE: Go Language support
+-- NOTE: Nix language support
 
 return {
   {

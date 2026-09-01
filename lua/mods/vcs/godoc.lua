@@ -9,7 +9,8 @@ return {
       branch = "main",
       build = ":TSUpdate godoc go", -- install/update parsers
       config = function()
-        require("nvim-treesitter.parsers").godoc = {
+        local parsers = require("nvim-treesitter.parsers")
+        local godoc_parser = {
           install_info = {
             url = "https://github.com/fredrikaverpil/tree-sitter-godoc",
             files = { "src/parser.c" },
@@ -17,15 +18,18 @@ return {
           filetype = "godoc",
         }
 
+        -- Register godoc parser for :TSInstall / :TSUpdate
+        parsers.godoc = godoc_parser
+
         -- Map godoc filetype to use godoc parser
         vim.treesitter.language.register("godoc", "godoc")
 
-        -- Enable :TSInstall godoc, :TSUpdate godoc
+        -- Keep the parser registered across :TSUpdate reloads
         vim.api.nvim_create_autocmd("User", {
           group = group,
           pattern = "TSUpdate",
           callback = function()
-            require("nvim-treesitter.parsers").godoc = parser_config
+            require("nvim-treesitter.parsers").godoc = godoc_parser
           end,
         })
 

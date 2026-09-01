@@ -26,15 +26,15 @@ return {
       },
       max_length = 99999,
       experimental = { check_rtp_message = false },
-    },
-    block_quotes = {
-      wrap = false,
-    },
-    headings = {
-      org_indent_wrap = false,
-    },
-    list_items = {
-      wrap = false,
+      block_quotes = {
+        wrap = false,
+      },
+      headings = {
+        org_indent_wrap = false,
+      },
+      list_items = {
+        wrap = false,
+      },
     },
     -- enabled = false,
     -- ft = "markdown" -- If you decide to lazy-load anyway

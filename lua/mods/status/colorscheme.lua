@@ -36,8 +36,9 @@ local function valid_colorscheme(name)
   if not name:match("^reham_") then
     return false
   end
-  local ok, _ = pcall(vim.cmd.colorscheme, name)
-  return ok
+  -- File-existence check instead of `vim.cmd.colorscheme`: applying the theme
+  -- during spec load re-source it a second time once LazyVim applies it.
+  return vim.fn.globpath(vim.o.runtimepath, "colors/" .. name .. ".lua") ~= ""
 end
 
 local default_colorscheme = function()
