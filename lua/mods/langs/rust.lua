@@ -1,5 +1,5 @@
 ---@type LazySpec
--- NOTE: Rust language support (Rustaceanvim)
+-- NOTE: Rust module — server, tooling, and test adapter in one self-contained spec.
 
 return {
   {
@@ -90,6 +90,15 @@ return {
         actions = true,
         completion = true,
         hover = true,
+      },
+    },
+  },
+  {
+    "nvim-neotest/neotest",
+    optional = true,
+    opts = {
+      adapters = {
+        ["rustaceanvim.neotest"] = {},
       },
     },
   },

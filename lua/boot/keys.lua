@@ -7,7 +7,7 @@ vim.keymap.set("n", "<leader>Pl", "<cmd>Lazy<cr>", { desc = "Lazy" })
 vim.keymap.set("n", "<leader>PL", "<cmd>LazyExtras<cr>", { desc = "Lazy Extras" })
 vim.keymap.set("n", "<leader>Pc", "<cmd>LazyVimChangelog<cr>", { desc = "LazyVim Changelog" })
 vim.keymap.set("n", "<leader>Pp", function()
-  local profile = require("config.profile")
+  local profile = require("boot.profile")
   local items = profile.available()
   vim.ui.select(items, { prompt = "Select Profile: " }, function(choice)
     if choice then
@@ -17,11 +17,11 @@ vim.keymap.set("n", "<leader>Pp", function()
 end, { desc = "Switch Profile" })
 vim.keymap.set("n", "<leader>Pp", function() end, { desc = "+Profile" })
 vim.keymap.set("n", "<leader>Pb", function()
-  require("core.utils").bootstrap_project()
+  require("lib.utils").bootstrap_project()
 end, { desc = "Bootstrap Project" })
 
 vim.keymap.set("n", "<leader>cx", function()
-  require("core.utils").run_code()
+  require("lib.utils").run_code()
 end, { desc = "Run Code" })
 
 vim.keymap.set({ "n", "v", "i" }, "<leader>cp", "<cmd>OpenSmartMenu<cr>", {

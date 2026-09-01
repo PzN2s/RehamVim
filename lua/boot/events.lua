@@ -1,6 +1,6 @@
 local group = vim.api.nvim_create_augroup("RehamVim", { clear = true })
 
-local profile = require("config.profile")
+local profile = require("boot.profile")
 
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = group,
