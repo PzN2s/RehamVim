@@ -1,1 +1,1 @@
-error("Not a Reham colorscheme: vim. Only the reham_* family is allowed")
+-- Blocked by RehamVim: only the reham_* family is allowed. Silent no-op.

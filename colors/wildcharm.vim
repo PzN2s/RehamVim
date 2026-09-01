@@ -1,1 +1,1 @@
-:echoerr "Not a Reham colorscheme: wildcharm. Only the reham_* family is allowed"
+" Blocked by RehamVim: only the reham_* family is allowed. Silent no-op so plugin previews never error.
