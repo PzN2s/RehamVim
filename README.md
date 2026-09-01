@@ -31,7 +31,7 @@ way of the rest of your system.
 
 | | Feature |
 | --- | --- |
-| ▫ | **Single colorscheme** — Reham Mist, hand-built to match your desktop. |
+| ▫ | **Reham theme family** — six hand-built colorschemes tuned for long sessions. |
 | ▫ | **No AI** — no Copilot, no assistants, no noise. |
 | ▫ | **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
 | ▫ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
@@ -40,17 +40,24 @@ way of the rest of your system.
 
 ---
 
-## ◻ Reham Mist
+## ◻ Reham theme family
 
-The one colorscheme it ships with is a **quiet, high-contrast monochrome**
-palette: pure black, near-white text, and a cool grey ramp with a single soft
-accent — designed to sit naturally next to the rest of your desktop chrome.
+Six hand-built colorschemes share one consistent UI mapping — they differ only
+in hue, so every surface, LSP diagnostic, and plugin menu stays put when you
+switch. All are **high-contrast and low-saturation** for comfortable, long
+programming sessions:
 
-```lua
-:colorscheme reham_mist
-```
+| Theme | Vibe |
+| --- | --- |
+| `reham_mist` | Quiet monochrome cool grey (default, matches the desktop chrome) |
+| `reham_forest` | Calm sage greens, soft pine accent |
+| `reham_dawn` | Warm midnight-coffee sepia, molasses accent |
+| `reham_ocean` | Deep navy with sky-cyan highlights |
+| `reham_ember` | Muted rose dusk on warm charcoal |
+| `reham_violet` | Deep indigo with lavender highlights |
 
-Switch live any time with `:Telescope colorscheme`.
+Pick one any time with `<leader>uC`, `:colorscheme <name>`, or
+`:Telescope colorscheme`. Your choice is remembered for next session.
 
 ---
 

@@ -20,6 +20,27 @@ vim.keymap.set("n", "<leader>Pb", function()
   require("lib.utils").bootstrap_project()
 end, { desc = "Bootstrap Project" })
 
+vim.keymap.set("n", "<leader>uC", function()
+  local all = vim.fn.getcompletion("", "colorscheme")
+  local family = {}
+  for _, name in ipairs(all) do
+    if name:match("^reham_") then
+      family[#family + 1] = name
+    end
+  end
+  local others = vim.tbl_filter(function(name)
+    return not name:match("^reham_")
+  end, all)
+  vim.tbl_sort(family)
+  vim.tbl_sort(others)
+  local themes = vim.list_extend(family, others)
+  vim.ui.select(themes, { prompt = "Colorscheme: " }, function(choice)
+    if choice then
+      vim.cmd.colorscheme(choice)
+    end
+  end)
+end, { desc = "Pick colorscheme" })
+
 vim.keymap.set("n", "<leader>cx", function()
   require("lib.utils").run_code()
 end, { desc = "Run Code" })

@@ -62,7 +62,7 @@ lua/
     vcs/               — Version control: lazygit, gh-dash, godoc
     tools/             — Utilities: cord, emojis, term, typr, mason
     debug/             — DAP setup (dap.lua, nvim-dap override)
-colors/                 — hand-built Reham Mist colorscheme (colors/reham_mist.lua)
+colors/                 — Reham theme family (colors/reham_mist.lua + 5 palettes)
 flake.nix              — Nix flake packaging; sets NVIM_APPNAME=rehamvim
 lazyvim.json           — LazyVim extras manifest (used by :LazyExtras)
 lazy-lock.json         — Locked plugin versions
@@ -98,7 +98,7 @@ return {
 ## Important Gotchas & Quirks
 
 ### Colorscheme persistence
-`lua/boot/events.lua` writes the current colorscheme name to `stdpath("data")/last_colorscheme` on `ColorScheme` event. `lua/mods/status/colorscheme.lua` reads this file at load time and defaults to `reham_mist`.
+`lua/boot/events.lua` writes the current colorscheme name to `stdpath("data")/last_colorscheme` on `ColorScheme` event. `lua/mods/status/colorscheme.lua` reads this file at load time and defaults to `reham_mist`. The six themes share a highlight engine in `lua/colorschemes/reham.lua` (`require("colorschemes.reham").define(name, palette)`); each `colors/reham_*.lua` only supplies its palette. The `<leader>uC` picker in `lua/boot/keys.lua` lists the family first.
 
 ### Snacks vs nvim-tree dashboard behavior
 When opening nvim with a directory argument, `lua/boot/events.lua` manually opens **both** nvim-tree and snacks dashboard via a `UIEnter` autocmd. The reason: snacks' own setup skips the dashboard when `argv > 0`, and setting `snacks.explorer.enabled = true` would open snacks' file picker instead of the dashboard. Keep `snacks.explorer.enabled = false`.
