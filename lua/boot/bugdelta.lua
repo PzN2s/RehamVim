@@ -212,40 +212,81 @@ function M.is_auto()
   return auto and opts.enabled
 end
 
----Self-diagnostic for :RehamBugDeltaHealth.
+---Self-diagnostic for :RehamBugDeltaHealth. LSP attach is async and can take a
+---beat, so it re-samples after a short wait and force-starts the server for
+---common filetypes before giving up.
 function M.health()
   local buf = current_buf()
   local ft = vim.bo[buf].filetype
-  local clients = {}
-  for _, c in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
-    clients[#clients + 1] = c.name
-  end
-  local diags = vim.diagnostic.get(buf)
-  local errs, warns = 0, 0
-  for _, d in ipairs(diags) do
-    if d.severity == vim.diagnostic.severity.ERROR then
-      errs = errs + 1
-    elseif d.severity == vim.diagnostic.severity.WARN then
-      warns = warns + 1
+
+  local function collect()
+    local clients = {}
+    for _, c in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
+      clients[#clients + 1] = c.name
     end
+    local diags = vim.diagnostic.get(buf)
+    local errs, warns = 0, 0
+    for _, d in ipairs(diags) do
+      if d.severity == vim.diagnostic.severity.ERROR then
+        errs = errs + 1
+      elseif d.severity == vim.diagnostic.severity.WARN then
+        warns = warns + 1
+      end
+    end
+    return clients, errs, warns
   end
-  local has_snapshot = snapshots[buf] ~= nil
-  local lines = {
-    "Bug Delta · health",
-    "  filetype: " .. (ft == "" and '(none)' or ft),
-    "  LSP clients: " .. (next(clients) and table.concat(clients, ", ") or "NONE — no diagnostics source"),
-    "  diagnostics now: " .. errs .. " error(s), " .. warns .. " warning(s)",
-    "  auto monitoring: " .. tostring(M.is_auto()),
-    "  snapshot taken: " .. tostring(has_snapshot),
-  }
-  if ft ~= "lua" then
-    lines[#lines + 1] = "  NOTE: buffer is not Lua — Bug Delta only detects issues for filetypes with an attached LSP"
+
+  local server_for = { lua = "lua_ls", go = "gopls", nix = "nil_ls", python = "pyright" }
+
+  local function render(clients, errs, warns, attempts)
+    local lines = {
+      "Bug Delta · health",
+      "  filetype: " .. (ft == "" and "(none)" or ft),
+      "  LSP clients: " .. (next(clients) and table.concat(clients, ", ") or "NONE — no diagnostics source"),
+      "  diagnostics now: " .. errs .. " error(s), " .. warns .. " warning(s)",
+      "  auto monitoring: " .. tostring(M.is_auto()),
+      "  snapshot taken: " .. tostring(snapshots[buf] ~= nil),
+      "  attach attempts: " .. attempts,
+    }
+    if ft ~= "" and not next(clients) then
+      local srv = server_for[ft]
+      if srv then
+        lines[#lines + 1] = "  NOTE: no server joined yet — retrying forced start of " .. srv
+      else
+        lines[#lines + 1] = "  NOTE: no LSP configured for this filetype — Bug Delta only reports issues filetypes with one"
+      end
+    end
+    vim.fn.writefile(lines, "/tmp/reham_bd_health.txt")
+    vim.cmd("new /tmp/reham_bd_health.txt")
+    vim.api.nvim_set_option_value("modifiable", true, {})
+    vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
+    vim.api.nvim_set_option_value("modifiable", false, {})
   end
-  vim.fn.writefile(lines, "/tmp/reham_bd_health.txt")
-  vim.cmd("new /tmp/reham_bd_health.txt")
-  vim.api.nvim_set_option_value("modifiable", true, {})
-  vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
-  vim.api.nvim_set_option_value("modifiable", false, {})
+
+  local clients, errs, warns = collect()
+  if next(clients) then
+    render(clients, errs, warns, 1)
+    return
+  end
+
+  -- Sample once more after the attach window, then force-start once.
+  vim.defer_fn(function()
+    local c2, e2, w2 = collect()
+    if next(c2) then
+      render(c2, e2, w2, 2)
+      return
+    end
+    local srv = server_for[ft]
+    if srv then
+      pcall(vim.cmd, "LspStart " .. srv)
+      vim.defer_fn(function()
+        local c3, e3, w3 = collect()
+        render(c3, e3, w3, 3)
+      end, 2000)
+    else
+      render({}, 0, 0, 2)
+    end
+  end, 1600)
 end
 
 vim.api.nvim_create_autocmd("BufWritePre", {
