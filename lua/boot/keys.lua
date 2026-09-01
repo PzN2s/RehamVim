@@ -23,13 +23,32 @@ vim.keymap.set("n", "<leader>Pb", function()
 end, { desc = "Bootstrap Project" })
 
 vim.keymap.set("n", "<leader>uC", function()
+  local active = vim.g.colors_name or ""
   local themes = vim.tbl_filter(function(name)
     return name:match("^reham_")
   end, vim.fn.getcompletion("", "color"))
   table.sort(themes)
-  vim.ui.select(themes, { prompt = "Colorscheme: " }, function(choice)
+  local items = vim.tbl_map(function(name)
+    return { name = name, label = (name == active and "▸ " or "  ") .. name }
+  end, themes)
+  local function resolve(choice)
+    if type(choice) == "table" then
+      return choice.name
+    end
     if choice then
-      vim.cmd.colorscheme(choice)
+      return choice:gsub("^[▸ ]+", "")
+    end
+  end
+  vim.ui.select(items, {
+    prompt = "Colorscheme: ",
+    default = items[vim.fn.index(themes, active) + 1] or items[1],
+    format_item = function(item)
+      return item.label
+    end,
+  }, function(choice)
+    local name = resolve(choice)
+    if name then
+      vim.cmd.colorscheme(name)
     end
   end)
 end, { desc = "Pick colorscheme" })
