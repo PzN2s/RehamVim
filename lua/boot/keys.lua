@@ -28,29 +28,82 @@ vim.keymap.set("n", "<leader>uC", function()
     return name:match("^reham_")
   end, vim.fn.getcompletion("", "color"))
   table.sort(themes)
-  local items = vim.tbl_map(function(name)
-    return { name = name, label = (name == active and "▸ " or "  ") .. name }
-  end, themes)
-  local function resolve(choice)
-    if type(choice) == "table" then
-      return choice.name
-    end
-    if choice then
-      return choice:gsub("^[▸ ]+", "")
-    end
+  if #themes == 0 then
+    return
   end
-  vim.ui.select(items, {
-    prompt = "Colorscheme: ",
-    default = items[vim.fn.index(themes, active) + 1] or items[1],
-    format_item = function(item)
-      return item.label
-    end,
-  }, function(choice)
-    local name = resolve(choice)
-    if name then
-      vim.cmd.colorscheme(name)
-    end
-  end)
+
+  local idx = vim.fn.index(themes, active) + 1
+  if idx < 1 then
+    idx = 1
+  end
+
+  local total = #themes
+  local winh = math.min(total, 15)
+  local maxw = 0
+  for _, name in ipairs(themes) do
+    maxw = math.max(maxw, #name)
+  end
+  local width = maxw + 5
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  local lines = {}
+  for _, name in ipairs(themes) do
+    lines[#lines + 1] = "  " .. name
+  end
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    style = "minimal",
+    width = width,
+    height = winh,
+    row = math.floor(vim.o.lines / 2 - winh / 2),
+    col = math.floor(vim.o.columns / 2 - width / 2),
+    border = "rounded",
+    title = " Colorscheme ",
+    title_pos = "center",
+  })
+  vim.api.nvim_win_set_option(win, "cursorline", true)
+
+  local function mark(row)
+    vim.api.nvim_buf_set_text(buf, row - 1, 0, row - 1, 2, { "▸ " })
+  end
+
+  local function unmark(row)
+    vim.api.nvim_buf_set_text(buf, row - 1, 0, row - 1, 2, { "  " })
+  end
+
+  local function move(delta)
+    unmark(idx)
+    idx = ((idx - 1 + delta) % total) + 1
+    mark(idx)
+    vim.api.nvim_win_set_cursor(win, { idx, 2 })
+  end
+
+  local function close()
+    pcall(vim.api.nvim_win_close, win, true)
+    pcall(vim.api.nvim_buf_delete, buf, { force = true })
+  end
+
+  local function apply()
+    pcall(vim.api.nvim_win_close, win, true)
+    vim.cmd.colorscheme(themes[idx])
+  end
+
+  local function keyspec(lhs, fn, desc)
+    vim.keymap.set("n", lhs, fn, { buffer = buf, nowait = true, silent = true })
+  end
+  keyspec("<Down>", function() move(1) end)
+  keyspec("j", function() move(1) end)
+  keyspec("<Up>", function() move(-1) end)
+  keyspec("k", function() move(-1) end)
+  keyspec("<CR>", function() apply() end)
+  keyspec("<Esc>", function() close() end)
+  keyspec("q", function() close() end)
+
+  mark(idx)
+  vim.api.nvim_win_set_cursor(win, { idx, 2 })
 end, { desc = "Pick colorscheme" })
 
 vim.keymap.set("n", "<leader>cx", function()
