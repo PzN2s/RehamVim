@@ -1,5 +1,3 @@
-local color_cache = { slot = -1, fg = nil, bg = nil }
-
 return {
   {
     "nvim-lualine/lualine.nvim",
@@ -31,52 +29,6 @@ return {
             LazyVim.lualine.root_dir(),
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             LazyVim.lualine.pretty_path(),
-
-            "%=",
-            {
-              function()
-                local frames = { "󱚝", "󱚟", "󰚩", "󱚡", "󱚣", "󱜙", "󱚥", "", "", "", "✦" }
-                local index = math.floor(os.time() / 4) % #frames + 1
-                return frames[index]
-              end,
-              separator = { left = "", right = "" },
-              padding = { left = 1, right = 1 },
-
-              color = function()
-                local slot = math.floor(os.time() / 4)
-                if slot == color_cache.slot then
-                  return { fg = color_cache.fg, bg = color_cache.bg, gui = "bold" }
-                end
-                color_cache.slot = slot
-                local hl_groups = {
-                  "DiagnosticInfo",
-                  "Constant",
-                  "Function",
-                  "String",
-                  "Statement",
-                  "Special",
-                  "Keyword",
-                  "DiagnosticWarn",
-                  "NeoTreeNormal",
-                  "Type",
-                  "Directory",
-                }
-                local index = slot % #hl_groups + 1
-
-                local fg_color = Snacks.util.color(hl_groups[index])
-                local hl = vim.api.nvim_get_hl(0, { name = "NeoTreeNormal", link = false })
-                local bg_color = hl.bg and string.format("#%06x", hl.bg)
-
-                color_cache.fg = fg_color
-                color_cache.bg = bg_color
-                return {
-                  fg = fg_color,
-                  bg = bg_color,
-                  gui = "bold",
-                }
-              end,
-            },
-            "%=",
           },
 
           lualine_x = {
