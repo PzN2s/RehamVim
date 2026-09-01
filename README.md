@@ -42,10 +42,11 @@ way of the rest of your system.
 
 ## ◻ Reham theme family
 
-Six hand-built colorschemes share one consistent UI mapping — they differ only
-in hue, so every surface, LSP diagnostic, and plugin menu stays put when you
-switch. All are **high-contrast and low-saturation** for comfortable, long
-programming sessions:
+Eleven hand-built colorschemes share one consistent UI mapping — they differ
+only in hue, so every surface, LSP diagnostic, and plugin menu stays put when
+you switch. The **base family** is high-contrast and low-saturation; the
+**black family** sits on a pure `#000000` background and gives text, files,
+and syntax more distinct colors:
 
 | Theme | Vibe |
 | --- | --- |
@@ -55,6 +56,11 @@ programming sessions:
 | `reham_ocean` | Deep navy with sky-cyan highlights |
 | `reham_ember` | Muted rose dusk on warm charcoal |
 | `reham_violet` | Deep indigo with lavender highlights |
+| `reham_void` | Pure black, classic blue/violet code colors |
+| `reham_obsidian` | Pure black, warm retro embers |
+| `reham_graphite` | Pure black, neutral teal & mint |
+| `reham_quantum` | Pure black, vivid modern-IDE multicolor |
+| `reham_ink` | Pure black, editorial white-forward, gold accents |
 
 Pick one any time with `<leader>uC`, `:colorscheme <name>`, or
 `:Telescope colorscheme`. Your choice is remembered for next session.

@@ -368,6 +368,101 @@ function M.define(name, C)
   hl("YankyPut", { link = "IncSearch" })
   hl("YankyYanked", { link = "IncSearch" })
   hl("Hlargs", { fg = C.fg_soft })
+
+  -- Optional per-syntax palette. Themes may add any of these keys to give
+  -- text/files distinct colors (pure-black themes use this heavily); when a
+  -- key is absent the base semantic color above stays untouched.
+  local function ov(name, key)
+    local c = C[key]
+    if c then
+      local cur = vim.api.nvim_get_hl(0, { name = name })
+      cur.fg = c
+      hl(name, cur)
+    end
+  end
+
+  -- comment / strings / literals
+  ov("Comment", "comment")
+  ov("@comment", "comment")
+  ov("@comment.documentation", "comment")
+  ov("String", "string")
+  ov("@string", "string")
+  ov("@string.documentation", "string")
+  ov("@string.regexp", "string")
+  ov("@string.escape", "string")
+  ov("@string.special", "string")
+  ov("@string.special.url", "string")
+  ov("Character", "string")
+  ov("@character", "string")
+  ov("Number", "number")
+  ov("Float", "number")
+  ov("@number", "number")
+  ov("Boolean", "number")
+  ov("@boolean", "number")
+  ov("SpecialChar", "number")
+  ov("Constant", "constant")
+  ov("@constant", "constant")
+  ov("@constant.builtin", "constant")
+  ov("Macro", "constant")
+  ov("Special", "constant")
+  ov("@attribute", "constant")
+  ov("@function.macro", "constant")
+
+  -- keywords / control flow
+  ov("Keyword", "keyword")
+  ov("@keyword", "keyword")
+  ov("@keyword.function", "keyword")
+  ov("@keyword.operator", "keyword")
+  ov("@keyword.return", "keyword")
+  ov("@keyword.conditional", "keyword")
+  ov("@keyword.repeat", "keyword")
+  ov("@keyword.storage", "keyword")
+  ov("Statement", "keyword")
+  ov("Conditional", "keyword")
+  ov("Repeat", "keyword")
+  ov("Label", "keyword")
+  ov("Include", "keyword")
+  ov("Define", "keyword")
+  ov("PreCondit", "keyword")
+  ov("StorageClass", "keyword")
+  ov("@type.qualifier", "keyword")
+
+  -- functions / types / modules
+  ov("Function", "function")
+  ov("@function", "function")
+  ov("@function.builtin", "function")
+  ov("@function.call", "function")
+  ov("Type", "type")
+  ov("@type", "type")
+  ov("@type.builtin", "type")
+  ov("@type.definition", "type")
+  ov("Structure", "type")
+  ov("Typedef", "type")
+  ov("@module", "type")
+  ov("@constructor", "type")
+
+  -- operators / punctuation
+  ov("Operator", "operator")
+  ov("@operator", "operator")
+  ov("Delimiter", "delimiter")
+  ov("@punctuation.delimiter", "delimiter")
+  ov("@punctuation.bracket", "delimiter")
+  ov("@tag.delimiter", "delimiter")
+
+  -- tags / properties / fields
+  ov("Tag", "tag")
+  ov("@tag", "tag")
+  ov("@property", "property")
+  ov("@field", "property")
+  ov("@tag.attribute", "property")
+  ov("@punctuation.special", "property")
+
+  -- identifiers / files / folders
+  ov("@variable", "variable")
+  ov("Identifier", "variable")
+  ov("Directory", "directory")
+  ov("NeoTreeDirectoryName", "directory")
+  ov("NeoTreeFileName", "file")
 end
 
 return M

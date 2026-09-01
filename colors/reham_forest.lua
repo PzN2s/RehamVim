@@ -1,5 +1,4 @@
--- reham_forest: calm forest greens, gentle and easy on the eyes.
--- Low-saturation sage/teal ramps with a soft pine accent.
+-- reham_forest
 local C = {
   ink        = "#0b0f0d",
   bg         = "#0e1311",
