@@ -48,9 +48,10 @@ vim.keymap.set("n", "<leader>uC", function()
   local buf = vim.api.nvim_create_buf(false, true)
   local lines = {}
   for _, name in ipairs(themes) do
-    lines[#lines + 1] = "  " .. name
+    lines[#lines + 1] = name
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.api.nvim_buf_set_option(buf, "modifiable", false)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
 
   local win = vim.api.nvim_open_win(buf, true, {
@@ -65,20 +66,25 @@ vim.keymap.set("n", "<leader>uC", function()
     title_pos = "center",
   })
   vim.api.nvim_win_set_option(win, "cursorline", true)
+  vim.cmd.stopinsert()
 
-  local function mark(row)
-    vim.api.nvim_buf_set_text(buf, row - 1, 0, row - 1, 2, { "▸ " })
-  end
-
-  local function unmark(row)
-    vim.api.nvim_buf_set_text(buf, row - 1, 0, row - 1, 2, { "  " })
+  local ns = vim.api.nvim_create_namespace("reham_theme_picker")
+  local marker
+  local function render()
+    if marker then
+      vim.api.nvim_buf_del_extmark(buf, ns, marker)
+    end
+    marker = vim.api.nvim_buf_set_extmark(buf, ns, idx - 1, 0, {
+      virt_text = { { "▸ ", "Special" } },
+      virt_text_pos = "inline",
+      hl_mode = "combine",
+    })
   end
 
   local function move(delta)
-    unmark(idx)
     idx = ((idx - 1 + delta) % total) + 1
-    mark(idx)
-    vim.api.nvim_win_set_cursor(win, { idx, 2 })
+    render()
+    vim.api.nvim_win_set_cursor(win, { idx, 0 })
   end
 
   local function close()
@@ -91,8 +97,10 @@ vim.keymap.set("n", "<leader>uC", function()
     vim.cmd.colorscheme(themes[idx])
   end
 
-  local function keyspec(lhs, fn, desc)
-    vim.keymap.set("n", lhs, fn, { buffer = buf, nowait = true, silent = true })
+  local function keyspec(lhs, fn)
+    for _, mode in ipairs({ "n", "i" }) do
+      vim.keymap.set(mode, lhs, fn, { buffer = buf, nowait = true, silent = true })
+    end
   end
   keyspec("<Down>", function() move(1) end)
   keyspec("j", function() move(1) end)
@@ -102,8 +110,8 @@ vim.keymap.set("n", "<leader>uC", function()
   keyspec("<Esc>", function() close() end)
   keyspec("q", function() close() end)
 
-  mark(idx)
-  vim.api.nvim_win_set_cursor(win, { idx, 2 })
+  render()
+  vim.api.nvim_win_set_cursor(win, { idx, 0 })
 end, { desc = "Pick colorscheme" })
 
 vim.keymap.set("n", "<leader>cx", function()
