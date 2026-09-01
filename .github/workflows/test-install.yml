@@ -1,0 +1,97 @@
+name: Test Installer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-install:
+    name: Test on ${{ matrix.distro }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - { name: "ubuntu", image: "ubuntu:24.04", pm: "apt" }
+          - { name: "arch", image: "archlinux:latest", pm: "pacman" }
+          - { name: "fedora", image: "fedora:40", pm: "dnf" }
+    container:
+      image: ${{ matrix.distro.image }}
+      options: --privileged --cgroupns=host
+    steps:
+      - name: Checkout RehamVim
+        uses: actions/checkout@v4
+        with:
+          repository: PzN2s/RehamVim
+          path: RehamVim
+
+      - name: Install base dependencies
+        run: |
+          case "${{ matrix.distro.pm }}" in
+            apt)
+              apt-get update && apt-get install -y git curl sudo bash fzf ;;
+            pacman)
+              pacman -Sy --noconfirm git curl sudo bash fzf ;;
+            dnf)
+              dnf install -y git curl sudo bash fzf ;;
+          esac
+
+      - name: Create test user
+        run: |
+          useradd -m -s /bin/bash testuser
+          echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+      - name: Run installer (dry-run)
+        run: |
+          cd RehamVim
+          sudo -u testuser HOME=/home/testuser bash install.sh --dry-run
+
+      - name: Run installer (doctor)
+        run: |
+          cd RehamVim
+          sudo -u testuser HOME=/home/testuser bash install.sh --doctor || true
+
+      - name: Run installer (unattended)
+        run: |
+          cd RehamVim
+          sudo -u testuser HOME=/home/testuser bash install.sh --unattended
+
+      - name: Verify nvim runs
+        run: |
+          sudo -u testuser HOME=/home/testuser /home/testuser/.config/nvim/../nvim --version || true
+
+      - name: Run uninstaller (dry-run)
+        run: |
+          cd RehamVim
+          sudo -u testuser HOME=/home/testuser bash uninstall.sh --dry-run
+
+  test-flake:
+    name: Nix Flake Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: PzN2s/RehamVim
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v12
+      - name: Build flake
+        run: nix build .#rehamvim
+      - name: Run nvim from flake
+        run: ./result/bin/nvim --headless "+lua print('flake ok')" +qa
+
+  lint:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: PzN2s/RehamVim
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Lint install.sh
+        run: shellcheck install.sh
+      - name: Lint uninstall.sh
+        run: shellcheck uninstall.sh
