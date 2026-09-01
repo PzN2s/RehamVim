@@ -109,19 +109,16 @@ function M.run(bufnr)
   if new_errors > 0 or new_warns > 0 then
     local parts = {}
     if new_errors > 0 then
-      parts[#parts + 1] = new_errors .. " أخطاء"
+      parts[#parts + 1] = new_errors .. " error" .. (new_errors > 1 and "s" or "")
     end
     if new_warns > 0 then
-      parts[#parts + 1] = new_warns .. " تحذيرات"
+      parts[#parts + 1] = new_warns .. " warning" .. (new_warns > 1 and "s" or "")
     end
-    notify(severity(new_errors, new_warns), "هذا الحفظ أضاف " .. table.concat(parts, " و") .. " جديدة")
+    notify(severity(new_errors, new_warns), "This save introduced " .. table.concat(parts, " and "))
   elseif fixed > 0 then
-    notify("info", "أصلحت " .. fixed .. " مشكلة — الملف نظيف الآن")
-    if opts.report_clean then
-      notify("info", "بدون أخطاء جديدة استلام")
-    end
+    notify("info", "Fixed " .. fixed .. " issue" .. (fixed > 1 and "s" or "") .. " — the file is clean now")
   elseif opts.report_clean then
-    notify("info", "حفظ نظيف، لا شيء جديد")
+    notify("info", "Clean save, nothing new")
   end
 end
 
@@ -139,7 +136,7 @@ function M.toggle()
     snapshots[b] = nil
   end
   vim.g.reham_bugdelta = nil
-  notify("info", auto and "تفعيل Bug Delta: سأراقب الحفظات القادمة" or "تعطيل Bug Delta: لن أراقب الحفظات")
+  notify("info", auto and "Bug Delta enabled: monitoring future saves" or "Bug Delta disabled: saves won't be monitored")
   return auto
 end
 
@@ -179,22 +176,22 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 vim.api.nvim_create_user_command("RehamBugDelta", function()
   M.inspect()
-end, { desc = "Bug Delta: تحليل تشخيصات الحفظ الحالي" })
+end, { desc = "Bug Delta: analyze diagnostics introduced by the last save" })
 
 vim.api.nvim_create_user_command("RehamBugDeltaToggle", function()
   M.toggle()
-end, { desc = "Bug Delta: تشغيل/إيقاف المراقبة التلقائية" })
+end, { desc = "Bug Delta: toggle automatic save monitoring" })
 
 vim.api.nvim_create_user_command("RehamBugDeltaList", function()
   local added = M.new_diagnostics()
   if #added == 0 then
-    notify("info", "لا توجد تشخيصات جديدة في هذا الملف")
+    notify("info", "No new diagnostics in this file")
     return
   end
   pcall(function()
-    vim.diagnostic.setloclist({ title = "Bug Delta · تشخيصات جديدة" }, added)
+    vim.diagnostic.setloclist({ title = "Bug Delta · new diagnostics" }, added)
     vim.cmd("lopen")
   end)
-end, { desc = "Bug Delta: افتح قائمة التشخيصات الجديدة" })
+end, { desc = "Bug Delta: open the list of new diagnostics" })
 
 return M
