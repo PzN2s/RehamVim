@@ -22,12 +22,4 @@ local C = {
   ok         = "#82c0a0",
 }
 
-local ok, engine = pcall(require, "colorschemes.reham")
-if not ok then
-  local source = assert(debug.getinfo(1, "S").source):sub(2)
-  local root = vim.fn.fnamemodify(source, ":p:h:h")
-  engine = assert(loadfile(root .. "/lua/colorschemes/reham.lua"))()
-  package.loaded["colorschemes.reham"] = engine
-end
-
-engine.define("reham_ocean", C)
+require("colorschemes.reham").define("reham_ocean", C)

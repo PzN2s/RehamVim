@@ -5,9 +5,14 @@ local M = {}
 -- Each `colors/reham_*.lua` supplies a palette table and calls
 -- `require("colorschemes.reham").define(name, C)`.
 --
--- Palettes expose the same semantic keys so every theme covers the same Ui
+-- Palettes expose the same semantic keys so every theme covers the same UI
 -- surfaces; they differ only in hue/saturation, keeping the UI consistent
 -- across the family.
+--
+-- NOTE: The colorscheme files must NOT load this module via `require` alone —
+-- lazy.nvim's loader cache can miss it at colorscheme-apply time (E5113),
+-- so they resolve it with loadfile() from an absolute path and only fall
+-- back to require before that.
 
 local function hl(name, v)
   vim.api.nvim_set_hl(0, name, v)
