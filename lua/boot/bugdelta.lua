@@ -8,14 +8,18 @@ local M = {}
 
 local opts = {
   enabled = true, -- auto analysis on save
-  delay = 400, -- ms to wait for the LSP to settle after a write
   max_lines = 20000, -- skip files larger than this
   report_clean = false, -- show a success toast on every clean save
 }
 
+-- When diagnostics arrive asynchronously after a save (LSP re-analysis can lag
+-- by 1-3s), poll a few times and only finalize once the diff settles.
+local attempts_ms = { 400, 1100, 2200, 3800 }
+
 local auto = true -- runtime toggle (RehamBugDeltaToggle)
 local snapshots = {} -- bufnr -> { map = {}, errors = 0, warns = 0 }
 local news = {} -- bufnr -> list of newly-introduced diagnostics
+local pending = {} -- bufnr -> true while waiting for diagnostics to settle
 
 local group = vim.api.nvim_create_augroup("reham_bugdelta", { clear = true })
 
@@ -74,17 +78,19 @@ local function take_snapshot(bufnr)
 end
 
 ---Compare the current diagnostics against the snapshot for `bufnr`, update
----global state and return the newly introduced (and fixed) counts.
-function M.run(bufnr)
+---global state and report the deltas. Returns true when the diff changed.
+---@param opts? {manual?: boolean}
+function M.run(bufnr, run_opts)
   bufnr = bufnr or current_buf()
+  run_opts = run_opts or {}
+
   local pre = snapshots[bufnr]
   if not pre then
     -- No reference yet: establish a baseline now so the NEXT save is diffed.
-    take_snapshot(bufnr)
-    if not auto or not opts.enabled then
-      return
+    if not run_opts.manual then
+      take_snapshot(bufnr)
     end
-    return
+    return false
   end
 
   local diags, cur = snapshot(bufnr)
@@ -101,6 +107,7 @@ function M.run(bufnr)
   end
 
   local fixed = math.max(pre.errors + pre.warns - (cur.errors + cur.warns), 0)
+  local changed = new_errors > 0 or new_warns > 0 or fixed > 0
 
   news[bufnr] = added
   vim.g.reham_bugdelta = { errors = new_errors, warns = new_warns, fixed = fixed, time = os.time() }
@@ -117,9 +124,55 @@ function M.run(bufnr)
     notify(severity(new_errors, new_warns), "This save introduced " .. table.concat(parts, " and "))
   elseif fixed > 0 then
     notify("info", "Fixed " .. fixed .. " issue" .. (fixed > 1 and "s" or "") .. " — the file is clean now")
-  elseif opts.report_clean then
-    notify("info", "Clean save, nothing new")
+  elseif run_opts.manual or opts.report_clean then
+    notify("info", "No new issues introduced by the last changes")
   end
+
+  return changed
+end
+
+---Set a baseline without reporting anything, then show the current counts so a
+---manual :RehamBugDelta always gives feedback (never silently "does nothing").
+function M.inspect(bufnr)
+  bufnr = bufnr or current_buf()
+  local pre = snapshots[bufnr]
+  if pre then
+    vim.api.nvim_buf_call(bufnr, function()
+      M.run(bufnr, { manual = true })
+    end)
+    return
+  end
+  local _, cur = snapshot(bufnr)
+  snapshots[bufnr] = cur
+  news[bufnr] = {}
+  vim.g.reham_bugdelta = { errors = cur.errors, warns = cur.warns, fixed = 0, time = os.time() }
+  local n = cur.errors + cur.warns
+  if n > 0 then
+    notify("warn", "Baseline set — file currently has " .. n .. " issue"
+      .. (n > 1 and "s" or "") .. "; the next save will be diffed against it")
+  else
+    notify("info", "File is clean — baseline set; the next save will be diffed against it")
+  end
+end
+
+---After a save, keep polling until the LSP diagnostics settle (or give up),
+---then finalize the diff once.
+local function schedule_settle(bufnr)
+  local tries = 0
+  local function try()
+    tries = tries + 1
+    if not pending[bufnr] then
+      return
+    end
+    local changed = M.run(bufnr)
+    if changed or tries >= #attempts_ms then
+      pending[bufnr] = nil
+      return
+    end
+    vim.defer_fn(try, attempts_ms[tries])
+  end
+  pending[bufnr] = true
+  vim.defer_fn(try, attempts_ms[1])
 end
 
 ---All newly-introduced diagnostics for a buffer (used by :RehamBugDeltaList).
@@ -135,17 +188,10 @@ function M.toggle()
   for _, b in ipairs(bufs) do
     snapshots[b] = nil
   end
+  pending = {}
   vim.g.reham_bugdelta = nil
   notify("info", auto and "Bug Delta enabled: monitoring future saves" or "Bug Delta disabled: saves won't be monitored")
   return auto
-end
-
----Manual analysis of the current buffer (needs a snapshot from a previous save).
-function M.inspect(bufnr)
-  local b = bufnr or current_buf()
-  vim.api.nvim_buf_call(b, function()
-    M.run(b)
-  end)
 end
 
 function M.is_auto()
@@ -165,11 +211,8 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     if not auto or not opts.enabled then
       return
     end
-    if snapshots[args.buf] then
-      local bufnr = args.buf
-      vim.defer_fn(function()
-        M.run(bufnr)
-      end, opts.delay)
+    if snapshots[args.buf] and not pending[args.buf] then
+      schedule_settle(args.buf)
     end
   end,
 })
@@ -183,15 +226,23 @@ vim.api.nvim_create_user_command("RehamBugDeltaToggle", function()
 end, { desc = "Bug Delta: toggle automatic save monitoring" })
 
 vim.api.nvim_create_user_command("RehamBugDeltaList", function()
-  local added = M.new_diagnostics()
+  local buf = vim.api.nvim_get_current_buf()
+  local added = M.new_diagnostics(buf)
+  -- Fall back to the file's CURRENT errors/warnings when nothing new was
+  -- detected yet, so the command always produces a useful list.
   if #added == 0 then
-    notify("info", "No new diagnostics in this file")
+    added = vim.tbl_filter(function(d)
+      return d.severity == vim.diagnostic.severity.ERROR or d.severity == vim.diagnostic.severity.WARN
+    end, vim.diagnostic.get(buf))
+  end
+  if #added == 0 then
+    notify("info", "This file has no errors or warnings")
     return
   end
   pcall(function()
-    vim.diagnostic.setloclist({ title = "Bug Delta · new diagnostics" }, added)
+    vim.diagnostic.setloclist({ title = "Bug Delta · diagnostics" }, added)
     vim.cmd("lopen")
   end)
-end, { desc = "Bug Delta: open the list of new diagnostics" })
+end, { desc = "Bug Delta: open the list of diagnostics (new/then current)" })
 
 return M
