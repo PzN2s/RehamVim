@@ -42,7 +42,7 @@ way of the rest of your system.
 
 ## ◻ Reham theme family
 
-Seventeen hand-built colorschemes share one consistent UI mapping — they differ
+Twenty-three hand-built colorschemes share one consistent UI mapping — they differ
 only in hue, so every surface, LSP diagnostic, and plugin menu stays put when
 you switch. The **base family** is high-contrast and low-saturation; the
 **black family** sits on a pure `#000000` background and gives text, files,
@@ -67,6 +67,12 @@ and syntax more distinct colors:
 | `reham_amber` | Pure black, retro amber & olive glow |
 | `reham_mint` | Pure black, fresh mint & coral |
 | `reham_aubergine` | Pure black, deep eggplant with iris & lilac |
+| `reham_synth` | Pure black, retro synthwave neon |
+| `reham_solarized` | Pure black, Solarized Dark |
+| `reham_teal` | Pure black, calm teal-dominant |
+| `reham_ruby` | Pure black, warm ruby-red |
+| `reham_matcha` | Pure black, calm matcha-green |
+| `reham_peach` | Pure black, warm apricot & peach |
 
 Pick one any time with `<leader>uC`, `:colorscheme <name>`, or
 `:Telescope colorscheme`. Your choice is remembered for next session.

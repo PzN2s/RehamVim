@@ -62,7 +62,7 @@ lua/
     vcs/               — Version control: lazygit, gh-dash, godoc
     tools/             — Utilities: cord, emojis, term, typr, mason
     debug/             — DAP setup (dap.lua, nvim-dap override)
-colors/                 — Reham theme family (17 themes: 6 base + 11 pure-black)
+colors/                 — Reham theme family (23 themes: 6 base + 17 pure-black)
 flake.nix              — Nix flake packaging; sets NVIM_APPNAME=rehamvim
 lazyvim.json           — LazyVim extras manifest (used by :LazyExtras)
 lazy-lock.json         — Locked plugin versions
