@@ -78,7 +78,8 @@ Pick one any time with `<leader>uC` or `:colorscheme <name>`. Your choice is
 remembered for next session. Only the Reham family works here — third-party
 colorscheme plugins are removed, the ones LazyVim bundles (tokyonight,
 catppuccin) are disabled, and Neovim's own built-in themes are shadowed in
-`colors/` so picking one (e.g. `:colorscheme habamax`) errors out.
+`colors/` so picking one (e.g. `:colorscheme habamax`) errors out. The sole
+exception is `default` (Neovim's baseline), which plugins restore to internally.
 
 ---
 
