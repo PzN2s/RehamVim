@@ -11,6 +11,10 @@ local function substitute(cmd)
   return result
 end
 
+-- venv activation script differs between fish and POSIX shells. Keep the
+-- bootstrap templates shell-aware so they work for every user.
+local venv_activate = vim.o.shell == "fish" and "source venv/bin/activate.fish" or "source venv/bin/activate"
+
 local function run_code()
   local file_extension = vim.fn.expand("%:e")
   local selected_cmd = ""
@@ -112,11 +116,11 @@ local function bootstrap_project()
         { name = "  Spring Boot", cmd = "springboot" },
         {
           name = "  Flask",
-          cmd = "mkdir $project_name && cd $project_name && python3 -m venv venv && source venv/bin/activate.fish && pip install flask && echo \"from flask import Flask\\napp = Flask(__name__)\\n@app.route('/')\\ndef home():\\n    return 'Hello, Flask!'\\n\\nif __name__ == '__main__':\\n    app.run(debug=True)\" > app.py",
+          cmd = "mkdir $project_name && cd $project_name && python3 -m venv venv && " .. venv_activate .. " && pip install flask && echo \"from flask import Flask\\napp = Flask(__name__)\\n@app.route('/')\\ndef home():\\n    return 'Hello, Flask!'\\n\\nif __name__ == '__main__':\\n    app.run(debug=True)\" > app.py",
         },
         {
           name = "  Django",
-          cmd = "mkdir $project_name && cd $project_name && python3 -m venv venv && source venv/bin/activate.fish && pip install django && python3 -m django startproject $project_name .",
+          cmd = "mkdir $project_name && cd $project_name && python3 -m venv venv && " .. venv_activate .. " && pip install django && python3 -m django startproject $project_name .",
         },
       },
     },

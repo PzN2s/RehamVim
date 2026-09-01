@@ -131,8 +131,8 @@ The `on_attach` in `lua/mods/view/tree.lua` maps `l` to open files (instead of d
 ### Right-click menu
 `lua/boot/keys.lua` maps `<RightMouse>` globally to open a smart context menu. It suppresses the menu on dashboard buffers, top-screen rows, and non-window contexts.
 
-### Shell is fish, not bash
-`lua/boot/opts.lua` sets `vim.opt.shell = "fish"` on non-Windows. This affects how shell commands (including code runner) execute. The `shellcmdflag = "-c"` and empty quotes handle fish's CLI interface.
+### Shell: fish when available, else the user's own
+`lua/boot/opts.lua` sets `vim.opt.shell = "fish"` on non-Windows **only when `fish` is installed**; otherwise it falls back to the user's default shell (`vim.o.shell`) so the config stays portable. PowerShell on win32.
 
 ### Boot layer loads AFTER `lazy.setup`
 `lua/boot/loader.lua` requires `boot.opts`, `boot.keys` and `boot.events` at the **end of `lazy.setup()`** (`init.lua` only requires `boot.loader`). This lets our custom options/keymaps/autocmds override LazyVim defaults. Do not move them before `setup()` (LazyVim would re-apply its own keymaps/options afterwards), and do not assume `boot.keys` works without this wiring — that bug left every custom keymap (`<leader>P*`, `<leader>uC`, right-click menu) silently dead.
