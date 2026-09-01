@@ -1,11 +1,22 @@
 local group = vim.api.nvim_create_augroup("RehamVim", { clear = true })
 
+local profile = require("config.profile")
+
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = group,
   callback = function()
     local file = vim.fn.stdpath("data") .. "/last_colorscheme"
     local name = string.lower(vim.g.colors_name or ""):gsub(" ", "_")
     vim.fn.writefile({ name }, file)
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "DirChanged", "VimEnter" }, {
+  group = group,
+  callback = function()
+    vim.defer_fn(function()
+      profile.refresh()
+    end, 50)
   end,
 })
 
