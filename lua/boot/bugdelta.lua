@@ -33,6 +33,11 @@ local function buf_lines(bufnr)
   return vim.api.nvim_buf_line_count(bufnr)
 end
 
+local function lsp_attached(bufnr)
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  return #clients > 0
+end
+
 local function severity(errors, warns)
   if (errors or 0) > 0 then
     return "error"
@@ -165,7 +170,16 @@ local function schedule_settle(bufnr)
       return
     end
     local changed = M.run(bufnr)
-    if changed or tries >= #attempts_ms then
+    if not changed and tries >= #attempts_ms then
+      pending[bufnr] = nil
+      -- Nothing new AND nothing found: if no diagnostics source is attached,
+      -- say so instead of silently doing nothing.
+      if not lsp_attached(bufnr) then
+        notify("warn", "No diagnostics source found for this buffer — the LSP may not be attached to this filetype")
+      end
+      return
+    end
+    if changed then
       pending[bufnr] = nil
       return
     end
@@ -196,6 +210,42 @@ end
 
 function M.is_auto()
   return auto and opts.enabled
+end
+
+---Self-diagnostic for :RehamBugDeltaHealth.
+function M.health()
+  local buf = current_buf()
+  local ft = vim.bo[buf].filetype
+  local clients = {}
+  for _, c in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
+    clients[#clients + 1] = c.name
+  end
+  local diags = vim.diagnostic.get(buf)
+  local errs, warns = 0, 0
+  for _, d in ipairs(diags) do
+    if d.severity == vim.diagnostic.severity.ERROR then
+      errs = errs + 1
+    elseif d.severity == vim.diagnostic.severity.WARN then
+      warns = warns + 1
+    end
+  end
+  local has_snapshot = snapshots[buf] ~= nil
+  local lines = {
+    "Bug Delta · health",
+    "  filetype: " .. (ft == "" and '(none)' or ft),
+    "  LSP clients: " .. (next(clients) and table.concat(clients, ", ") or "NONE — no diagnostics source"),
+    "  diagnostics now: " .. errs .. " error(s), " .. warns .. " warning(s)",
+    "  auto monitoring: " .. tostring(M.is_auto()),
+    "  snapshot taken: " .. tostring(has_snapshot),
+  }
+  if ft ~= "lua" then
+    lines[#lines + 1] = "  NOTE: buffer is not Lua — Bug Delta only detects issues for filetypes with an attached LSP"
+  end
+  vim.fn.writefile(lines, "/tmp/reham_bd_health.txt")
+  vim.cmd("new /tmp/reham_bd_health.txt")
+  vim.api.nvim_set_option_value("modifiable", true, {})
+  vim.api.nvim_buf_set_lines(0, 0, -1, true, lines)
+  vim.api.nvim_set_option_value("modifiable", false, {})
 end
 
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -250,5 +300,9 @@ vim.api.nvim_create_user_command("RehamBugDeltaList", function()
     vim.cmd("lopen")
   end)
 end, { desc = "Bug Delta: open the list of diagnostics (new/then current)" })
+
+vim.api.nvim_create_user_command("RehamBugDeltaHealth", function()
+  M.health()
+end, { desc = "Bug Delta: show a self-diagnostic report for the current buffer" })
 
 return M
