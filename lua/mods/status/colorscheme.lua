@@ -4,6 +4,34 @@ local last_file = vim.fn.stdpath("data") .. "/last_colorscheme"
 local ok, lines = pcall(vim.fn.readfile, last_file)
 local last_colorscheme = ok and #lines > 0 and lines[1]:gsub("%s+", "") or nil
 
+-- Reham family only: keep non-Reham themes out of every Lua-side picker.
+-- Neovim's runtime always ships built-in themes that cannot be removed from
+-- the installed package, so filter them out at the completion source.
+local orig_getcompletion = vim.fn.getcompletion
+vim.fn.getcompletion = function(arglead, cmdline)
+  if cmdline == "color" then
+    return vim.tbl_filter(function(name)
+      return name:match("^reham_")
+    end, orig_getcompletion(arglead, cmdline))
+  end
+  return orig_getcompletion(arglead, cmdline)
+end
+
+-- snacks' "colorschemes" picker has live preview (it applies the hovered
+-- theme) and its source scans `colors/*` on the runtimepath directly, so the
+-- getcompletion filter above does not cover it. Patch the loaded source module
+-- (require caches it, so this takes effect for later picker opens).
+local ok_vim_src, vim_src = pcall(require, "snacks.picker.source.vim")
+if ok_vim_src and vim_src and vim_src.colorschemes then
+  local orig = vim_src.colorschemes
+  vim_src.colorschemes = function()
+    local items = orig()
+    return vim.tbl_filter(function(item)
+      return item.text:match("^reham_")
+    end, items)
+  end
+end
+
 local function valid_colorscheme(name)
   if not name:match("^reham_") then
     return false

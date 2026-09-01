@@ -77,10 +77,10 @@ and syntax more distinct colors:
 Pick one any time with `<leader>uC` or `:colorscheme <name>`. Your choice is
 remembered for next session. Only the Reham family actually switches colors —
 third-party colorscheme plugins are removed, the ones LazyVim bundles
-(tokyonight, catppuccin) are disabled, and Neovim's own built-in themes are
-shadowed in `colors/` so picking one (e.g. `:colorscheme habamax`) is a silent
-no-op that keeps the current theme. `default` (Neovim's baseline) is exempt —
-plugins restore to it internally.
+(tokyonight, catppuccin) are disabled, Neovim's built-in themes are shadowed in
+`colors/` as silent no-ops, and every theme picker (the `<leader>uC` menu,
+snacks' live-preview picker, Telescope) is filtered to `reham_*` only.
+`default` (Neovim's baseline) is exempt — plugins restore to it internally.
 
 ---
 
