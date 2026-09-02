@@ -12,9 +12,10 @@ a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
 
 </div>
 
-**RehamVim** is a fast, curated Neovim configuration with one hand-built
-monochrome colorscheme and deep language support. It installs in seconds,
-stays out of your way, and gets out of the way of the rest of your system.
+**RehamVim** is a fast, curated Neovim configuration with a suite of
+twenty-three hand-built monochrome colorschemes and deep language support. It
+installs in seconds, stays out of your way, and gets out of the way of the
+rest of your system.
 
 <div align="center">
 
