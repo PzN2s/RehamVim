@@ -33,31 +33,6 @@ return {
 
           lualine_x = {
             {
-              function()
-                local s = vim.g.reham_bugdelta
-                if not s then
-                  return ""
-                end
-                local n = (s.errors or 0) + (s.warns or 0)
-                if n > 0 then
-                  return "Δ+" .. n
-                elseif s.fixed and s.fixed > 0 then
-                  return "Δ0"
-                end
-                return ""
-              end,
-              color = function()
-                local s = vim.g.reham_bugdelta
-                local n = s and ((s.errors or 0) + (s.warns or 0)) or 0
-                if n > 0 then
-                  return { fg = Snacks.util.color("DiagnosticError"), gui = "bold" }
-                end
-                return { fg = Snacks.util.color("DiagnosticOk"), gui = "bold" }
-              end,
-              separator = { left = "", right = "" },
-              padding = { left = 1, right = 1 },
-            },
-            {
               "diagnostics",
               symbols = {
                 error = icons.diagnostics.Error,

@@ -152,8 +152,6 @@ The `on_attach` in `lua/mods/view/tree.lua` maps `l` to open files (instead of d
 ### Notifications: snacks only
 `lua/mods/view/notifications.lua` disables `folke/noice.nvim` (`enabled = false`) — notifications come from `snacks.notifier` alone. Running both produced duplicate toasts. Keep noice disabled.
 
-### Bug Delta (feature): `BufWritePre` snapshots the current buffer's diagnostics, `BufWritePost` starts an adaptive settle (polling at 400/1100/2200/3800 ms) so slow LSP re-analysis isn't missed, then reports newly introduced errors/warnings via `Snacks.notify` and a lualine `Δ+N`/`Δ0` marker (`vim.g.reham_bugdelta`). **First save of a buffer starts from an EMPTY baseline** so pre-existing errors in the file are reported instead of silently absorbed; when nothing is new but the file still has issues it says "already has N issue(s)". Commands: `:RehamBugDelta` (analyze now — always replies; no baseline yet = diffs against empty), `:RehamBugDeltaToggle` (on/off auto), `:RehamBugDeltaList` (loclist; falls back to the file's current errors/warnings if nothing is new). Do NOT let `M.run` silently advance the baseline before diagnostics settle, and never snapshot on the very first BufWritePre (it would absorb the very error being typed).
-
 ### Smart menu triggers
 `lua/mods/view/menu.lua` (`nvzone/menu`) is `lazy = true` and must declare `cmd = { "OpenSmartMenu" }` — the user command is defined inside its `config()`, so without a trigger the plugin never loads and the command is missing (`<leader>cp` / right-click break). Keep it lazy.
 
