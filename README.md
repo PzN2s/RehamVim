@@ -175,10 +175,10 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 
 | Language | LSP | Debug | Test | Format |
 | --- | :---: | :---: | :---: | :---: |
-| Go             | ✅ | ✅ | ✅ | ✅ |
-| Rust           | ✅ | ✅ | ✅ | ✅ |
-| TypeScript / JS| ✅ | — | — | ✅ |
-| Python         | ✅ | — | — | ✅ |
+| Go             | ☑ | ☑ | ☑ | ☑ |
+| Rust           | ☑ | ☑ | ☑ | ☑ |
+| TypeScript / JS| ☑ | ○ | ○ | ☑ |
+| Python         | ☑ | ○ | ○ | ☑ |
 
 ## ○ Layout
 
