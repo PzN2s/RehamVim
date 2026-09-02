@@ -38,6 +38,24 @@ local function lsp_attached(bufnr)
   return #clients > 0
 end
 
+-- Filetypes that are expected to have an LSP registered through LazyVim's
+-- lspconfig servers. Plain text/documents return false so Bug Delta stays
+-- silent on files where no server exists by design.
+local LSP_FILETYPES = {
+  lua = true, go = true, rust = true, nix = true, python = true,
+  javascript = true, typescript = true, typescriptreact = true,
+  javascriptreact = true, vue = true, json = true, jsonc = true,
+  html = true, css = true, scss = true, bash = true, sh = true,
+  markdown = true, yaml = true, toml = true,
+}
+
+local function ft_has_lsp(ft)
+  if not ft or ft == "" then
+    return false
+  end
+  return LSP_FILETYPES[ft] == true
+end
+
 local function severity(errors, warns)
   if (errors or 0) > 0 then
     return "error"
@@ -172,10 +190,12 @@ local function schedule_settle(bufnr)
     local changed = M.run(bufnr)
     if not changed and tries >= #attempts_ms then
       pending[bufnr] = nil
-      -- Nothing new AND nothing found: if no diagnostics source is attached,
-      -- say so instead of silently doing nothing.
-      if not lsp_attached(bufnr) then
-        notify("warn", "No diagnostics source found for this buffer — the LSP may not be attached to this filetype")
+      -- Only warn when this filetype is SUPPOSED to have an LSP but one never
+      -- attached; skip plain text/documents that have no server by design so
+      -- we don't spam users on normal files.
+      if not lsp_attached(bufnr) and ft_has_lsp(vim.bo[bufnr].filetype) then
+        notify("warn", "No LSP attached for this " .. vim.bo[bufnr].filetype
+          .. " file — Bug Delta can't detect issues until it connects")
       end
       return
     end
