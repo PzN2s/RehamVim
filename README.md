@@ -16,7 +16,14 @@ a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
 monochrome colorscheme and deep language support. It installs in seconds,
 stays out of your way, and gets out of the way of the rest of your system.
 
----
+<div align="center">
+
+<a href="image.png"><img src="image.png" width="48%" alt="RehamVim — dashboard"></a>
+<a href="iage.png"><img src="iage.png" width="48%" alt="RehamVim — editing"></a>
+<br><br>
+<a href="imge.png"><img src="imge.png" width="96%" alt="RehamVim — full setup"></a>
+
+</div>
 
 ## ○ Highlights
 
@@ -27,8 +34,6 @@ stays out of your way, and gets out of the way of the rest of your system.
 | ○ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
 | ○ | **Curated tooling** — lazygit, telescope, treesitter, dap, lualine. |
 | ○ | **Plug & play** — clone, open, done. Lazy handles the rest. |
-
----
 
 ## ○ Reham theme family
 
@@ -71,8 +76,6 @@ third-party colorscheme plugins are removed, the ones LazyVim bundles
 `colors/` as silent no-ops, and every theme picker (the `<leader>uC` menu,
 snacks' live-preview picker, Telescope) is filtered to `reham_*` only.
 `default` (Neovim's baseline) is exempt — plugins restore to it internally.
-
----
 
 ## ○ Installation
 
@@ -125,8 +128,6 @@ nvim
 
 Lazy.nvim fetches and configures every plugin on first launch.
 
----
-
 ## ○ Nix
 
 Ships a `flake.nix` exposing an isolated `rehamvim` binary — no interference
@@ -155,8 +156,6 @@ Or add it to your flake:
 > [!NOTE]
 > The config lives in `/nix/store`; `rehamvim` is the entry point.
 
----
-
 ## ○ Key Bindings
 
 | Keys | Action |
@@ -172,8 +171,6 @@ Or add it to your flake:
 
 Full set at `:Telescope keymaps` or `<leader>sk`.
 
----
-
 ## ○ Supported Languages
 
 | Language | LSP | Debug | Test | Format |
@@ -182,8 +179,6 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 | Rust           | ✅ | ✅ | ✅ | ✅ |
 | TypeScript / JS| ✅ | — | — | ✅ |
 | Python         | ✅ | — | — | ✅ |
-
----
 
 ## ○ Layout
 
@@ -211,8 +206,6 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 │       └── debug/        # DAP
 └── lazy-lock.json        # pinned plugin versions
 ```
-
----
 
 ## ○ Contributing
 
