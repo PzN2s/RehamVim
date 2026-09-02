@@ -45,9 +45,20 @@ if (Get-Command winget -ErrorAction SilentlyContinue) {
 
 # ────────────────────────────── Helpers ───────────────────────────────────
 
+function Confirm-PkgInstall {
+    param([string]$CommandLine)
+    $answer = Read-Host "    Run: $CommandLine — proceed? (Y/n)"
+    return ($answer -notmatch '^[Nn]$')
+}
+
 function Invoke-PkgInstall {
     param([string[]]$PackageIds)
     foreach ($id in $PackageIds) {
+        $cmd = if ($Winget) { "winget install --id $id" } else { "choco install $id -y" }
+        if (-not (Confirm-PkgInstall $cmd)) {
+            Write-Warn "Skipped by user: $id"
+            continue
+        }
         Write-Info "Installing: $id"
         try {
             if ($Winget) {
@@ -63,8 +74,10 @@ function Invoke-PkgInstall {
             $retry = Read-Host "  (r)etry, (s)kip, (e)xit? [r/s/e]"
             switch ($retry) {
                 { $_ -match '^[Rr]$' } {
-                    if (($Winget -and (& winget install --id $id --silent --accept-package-agreements --accept-source-agreements)) -or
-                        ($Choco -and (& choco install $id -y))) {
+                    $cmd2 = if ($Winget) { "winget install --id $id" } else { "choco install $id -y" }
+                    if ((Confirm-PkgInstall $cmd2) -and
+                        (($Winget -and (& winget install --id $id --silent --accept-package-agreements --accept-source-agreements)) -or
+                         ($Choco -and (& choco install $id -y)))) {
                         Write-Ok "$id installed"
                     } else {
                         Write-Warn "Skipping $id after failed retry."
@@ -103,16 +116,21 @@ if ($corePackageIds.Count -gt 0) {
 if (-not (Test-Command nvim)) {
     $answer = Read-Host "Install Neovim? (Y/n)"
     if ($answer -notmatch '^[Nn]$') {
-        Write-Info "Installing Neovim..."
-        if ($Winget) {
-            & winget install --id Neovim.Neovim --silent --accept-package-agreements --accept-source-agreements
+        $nvCmd = if ($Winget) { "winget install --id Neovim.Neovim" } else { "choco install neovim -y" }
+        if (Confirm-PkgInstall $nvCmd) {
+            Write-Info "Installing Neovim..."
+            if ($Winget) {
+                & winget install --id Neovim.Neovim --silent --accept-package-agreements --accept-source-agreements
+            } else {
+                & choco install neovim -y --no-progress
+            }
+            if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+                Write-Warn "Neovim install returned non-zero; you may need to install it manually."
+            } else {
+                Write-Ok "Neovim installed"
+            }
         } else {
-            & choco install neovim -y --no-progress
-        }
-        if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
-            Write-Warn "Neovim install returned non-zero; you may need to install it manually."
-        } else {
-            Write-Ok "Neovim installed"
+            Write-Warn "Skipping Neovim install."
         }
     } else {
         Write-Warn "Skipping Neovim install."
@@ -150,8 +168,12 @@ if ($selected.Count -gt 0) {
 
 if (Test-Path (Join-Path $ConfigDir ".git")) {
     Write-Info "Existing RehamVim install found — updating."
-    git -C $ConfigDir pull --ff-only
-    if (-not $?) { Write-Warn "Could not auto-update; run 'git -C $ConfigDir pull' later." }
+    if (Confirm-PkgInstall "git -C $ConfigDir pull --ff-only") {
+        git -C $ConfigDir pull --ff-only
+        if (-not $?) { Write-Warn "Could not auto-update; run 'git -C $ConfigDir pull' later." }
+    } else {
+        Write-Warn "Skipped update by user."
+    }
 } else {
     if (Test-Path $ConfigDir) {
         Write-Warn "Config directory exists but is not a git repo: $ConfigDir"
@@ -169,8 +191,12 @@ if (Test-Path (Join-Path $ConfigDir ".git")) {
         }
     }
     Write-Info "Cloning RehamVim into $ConfigDir ..."
-    git clone $RepoUrl $ConfigDir
-    if (-not $?) { Write-ErrorS "Clone failed."; exit 1 }
+    if (Confirm-PkgInstall "git clone $RepoUrl $ConfigDir") {
+        git clone $RepoUrl $ConfigDir
+        if (-not $?) { Write-ErrorS "Clone failed."; exit 1 }
+    } else {
+        Write-Warn "Skipped config clone by user."
+    }
 }
 
 Write-Host ""

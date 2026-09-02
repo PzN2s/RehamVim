@@ -69,6 +69,21 @@ run() {
   "$@"
 }
 
+# Confirm before executing any install/download command.
+# Skipped entirely in --unattended, --doctor, and --dry-run (auto-proceed).
+confirm_cmd() {
+  if [ $UNATTENDED -eq 1 ] || [ $DOCTOR -eq 1 ] || [ $DRY_RUN -eq 1 ] || [ ! -t 0 ]; then
+    return 0
+  fi
+  local ans
+  read -r -p "  Run: $* — proceed? [Y/n]: " -n 1 ans </dev/tty
+  echo
+  case "${ans}" in
+    n|N) warn "Skipped by user: $*"; return 1 ;;
+    *)   return 0 ;;
+  esac
+}
+
 REPO_URL="${REHAMVIM_REPO:-https://github.com/PzN2s/RehamVim.git}"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 
@@ -142,7 +157,11 @@ detect_pm() {
     PM_SEARCH="pacman -Q"
     say "Package manager: pacman (Arch)"
   elif command -v apt-get >/dev/null 2>&1; then
-    run $SUDO apt-get update -y >/dev/null 2>&1 || true
+    if [ $UNATTENDED -eq 1 ] || [ $DOCTOR -eq 1 ] || [ $DRY_RUN -eq 1 ] || [ ! -t 0 ]; then
+      run $SUDO apt-get update -y >/dev/null 2>&1 || true
+    elif confirm_cmd $SUDO apt-get update; then
+      run $SUDO apt-get update -y >/dev/null 2>&1 || true
+    fi
     PM_INSTALL="$SUDO apt-get install -y"
     PM_SEARCH="dpkg -s"
     say "Package manager: apt (Debian/Ubuntu)"
@@ -179,6 +198,11 @@ install_pkgs() {
   fi
   local pkgs_txt="${pkgs[*]}"
   say "Installing: $pkgs_txt"
+  if ! confirm_cmd $PM_INSTALL "${pkgs[@]}"; then
+    warn "Skipping $pkgs_txt"
+    for p in "${pkgs[@]}"; do record_skipped "$p"; done
+    return 0
+  fi
   if run $PM_INSTALL "${pkgs[@]}"; then
     ok "$pkgs_txt installed"
     for p in "${pkgs[@]}"; do record_installed "$p"; done
@@ -197,13 +221,14 @@ install_pkgs() {
     echo
     case "$retry" in
       r|R)
-        if run $PM_INSTALL "${pkgs[@]}"; then
-          ok "$pkgs_txt installed (retry)"
-          for p in "${pkgs[@]}"; do record_installed "$p"; done
-          return 0
-        else
-          warn "Retry failed."
+        if confirm_cmd $PM_INSTALL "${pkgs[@]}"; then
+          if run $PM_INSTALL "${pkgs[@]}"; then
+            ok "$pkgs_txt installed (retry)"
+            for p in "${pkgs[@]}"; do record_installed "$p"; done
+            return 0
+          fi
         fi
+        warn "Retry failed."
         ;;
       s|S)
         warn "Skipping $pkgs_txt"
@@ -391,7 +416,17 @@ fi
 # 3. Clone / update config
 if [ -d "$CONFIG_DIR/.git" ]; then
   say "Existing RehamVim install found — updating."
-  if run git -C "$CONFIG_DIR" pull --ff-only; then
+  if [ $UNATTENDED -eq 1 ] || [ $DRY_RUN -eq 1 ] || [ ! -t 0 ]; then
+    run git -C "$CONFIG_DIR" pull --ff-only
+  elif confirm_cmd git -C "$CONFIG_DIR" pull --ff-only; then
+    run git -C "$CONFIG_DIR" pull --ff-only
+  else
+    warn "Skipped update by user."
+    record_skipped "config-update"
+  fi
+  if [ $DRY_RUN -eq 1 ]; then
+    :
+  elif [ -d "$CONFIG_DIR/.git" ] && git -C "$CONFIG_DIR" rev-parse --verify HEAD >/dev/null 2>&1; then
     ok "Config updated"
     record_installed "config-update"
   else
@@ -420,12 +455,22 @@ else
     fi
   fi
   say "Cloning RehamVim into $CONFIG_DIR..."
-  if run git clone "$REPO_URL" "$CONFIG_DIR"; then
+  if [ $UNATTENDED -eq 1 ] || [ $DRY_RUN -eq 1 ] || [ ! -t 0 ]; then
+    run git clone "$REPO_URL" "$CONFIG_DIR"
+  elif confirm_cmd git clone "$REPO_URL" "$CONFIG_DIR"; then
+    run git clone "$REPO_URL" "$CONFIG_DIR"
+  else
+    warn "Skipped config clone by user."
+    record_skipped "config-clone"
+  fi
+  if [ -d "$CONFIG_DIR/.git" ]; then
     ok "Config cloned"
     record_installed "config-clone"
     # Verify commit
     commit=$(git -C "$CONFIG_DIR" log -1 --format="%H" 2>/dev/null || echo "unknown")
     say "Cloned commit: ${commit:0:12}"
+  elif [ $DRY_RUN -eq 1 ]; then
+    :
   else
     die "Clone failed."
   fi
