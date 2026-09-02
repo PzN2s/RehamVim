@@ -98,8 +98,16 @@ Invoke-WebRequest https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.
 ```
 
 The installer detects your package manager, installs the essentials
-(`ripgrep`, `fd`, `lazygit`, `gh`), and asks which languages you want. Need to
-inspect before you commit, or diagnose an existing setup?
+(`ripgrep`, `fd`, `lazygit`, `gh`), and asks which languages you want.
+
+> [!NOTE]
+> **Confirmation before every install.** In interactive terminals the installer
+> asks you to confirm each download and install command before it runs — package
+> installs, `git clone`/`pull`, and `apt-get update`. Press `n` to skip any step
+> you don't want. Non-interactive modes bypass the prompts and run straight
+> through, safe for CI.
+
+Need to inspect before you commit, or diagnose an existing setup?
 
 ```sh
 # diagnose an existing install without changing anything
@@ -108,9 +116,12 @@ bash install.sh --doctor
 # preview exactly what will run, executing nothing
 bash install.sh --dry-run
 
-# non-interactive install (CI / scripting)
+# non-interactive install (CI / scripting) — no prompts, no confirmation
 bash install.sh --unattended
 ```
+
+Running without an option starts an interactive install: every package,
+download, and clone is confirmed before it runs.
 
 Removing RehamVim later is a one-liner (config is backed up first):
 
