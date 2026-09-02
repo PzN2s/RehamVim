@@ -7,3 +7,7 @@ foo.*
 .tests
 tt.*
 Untitled
+
+# WIP screenshots kept on disk but not for publishing yet
+iage.png
+imge.png
