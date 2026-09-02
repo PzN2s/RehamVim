@@ -2,7 +2,7 @@
 
 <br>
 
-# ◻ RehamVim
+# RehamVim
 
 **a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).**
 
@@ -23,24 +23,18 @@ monochrome colorscheme, deep language support, and **zero AI** — just you and
 the editor. It installs in seconds, stays out of your way, and gets out of the
 way of the rest of your system.
 
-## ◻ Screenshots
+## Highlights
 
-<img src="image.png" alt="RehamVim screenshot" width="720">
-<img src="iage.png" alt="RehamVim theme" width="720">
-<img src="imge.png" alt="RehamVim layout" width="720">
+| Feature |
+| --- |
+| **Reham theme family** — twenty-three hand-built colorschemes, nothing third-party. |
+| **No AI** — no Copilot, no assistants, no noise. |
+| **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
+| **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
+| **Curated tooling** — lazygit, telescope, treesitter, dap, lualine. |
+| **Plug & play** — clone, open, done. Lazy handles the rest. |
 
-## ◻ Highlights
-
-| | Feature |
-| --- | --- |
-| □ | **Reham theme family** — twenty-three hand-built colorschemes, nothing third-party. |
-| □ | **No AI** — no Copilot, no assistants, no noise. |
-| □ | **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
-| □ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
-| □ | **Curated tooling** — lazygit, telescope, treesitter, dap, lualine. |
-| □ | **Plug & play** — clone, open, done. Lazy handles the rest. |
-
-## ◻ Reham theme family
+## Reham theme family
 
 Twenty-three hand-built colorschemes share one consistent UI mapping — they differ
 only in hue, so every surface, LSP diagnostic, and plugin menu stays put when
@@ -49,7 +43,7 @@ you switch. The **base family** is high-contrast and low-saturation; the
 and syntax more distinct colors:
 
 | Theme | Vibe |
-| --- | --- |
+| --- |
 | `reham_mist` | Quiet monochrome cool grey (default, matches the desktop chrome) |
 | `reham_forest` | Calm sage greens, soft pine accent |
 | `reham_dawn` | Warm midnight-coffee sepia, molasses accent |
@@ -82,7 +76,7 @@ third-party colorscheme plugins are removed, the ones LazyVim bundles
 snacks' live-preview picker, Telescope) is filtered to `reham_*` only.
 `default` (Neovim's baseline) is exempt — plugins restore to it internally.
 
-## ◻ Installation
+## Installation
 
 **Prerequisites:** Neovim ≥ 0.12, `git`, `curl`, and the compilers your LSPs
 need (`gcc`, `make`, `clang`).
@@ -134,7 +128,7 @@ nvim
 
 Lazy.nvim fetches and configures every plugin on first launch.
 
-## ◻ Nix
+## Nix
 
 Ships a `flake.nix` exposing an isolated `rehamvim` binary — no interference
 with your system Neovim.
@@ -162,10 +156,10 @@ Or add it to your flake:
 > [!NOTE]
 > The config lives in `/nix/store`; `rehamvim` is the entry point.
 
-## ◻ Key Bindings
+## Key Bindings
 
 | Keys | Action |
-| --- | --- |
+| --- |
 | `<leader>e` | Toggle file tree |
 | `<leader>f` | Find files (Telescope) |
 | `<leader>u` | UI-related commands |
@@ -177,7 +171,7 @@ Or add it to your flake:
 
 Full set at `:Telescope keymaps` or `<leader>sk`.
 
-## ◻ Supported Languages
+## Supported Languages
 
 | Language | LSP | Debug | Test | Format |
 | --- | :---: | :---: | :---: | :---: |
@@ -186,7 +180,7 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 | TypeScript / JS| ✅ | — | — | ✅ |
 | Python         | ✅ | — | — | ✅ |
 
-## ◻ Layout
+## Layout
 
 ```
 ~/.config/nvim
@@ -213,7 +207,7 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 └── lazy-lock.json        # pinned plugin versions
 ```
 
-## ◻ Contributing
+## Contributing
 
 Found a bug or want something better? Open an issue or a pull request. Keep it
 minimal, keep it fast — that's the spirit of this config.
