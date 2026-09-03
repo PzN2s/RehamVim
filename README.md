@@ -2,7 +2,7 @@
 
 # RehamVim
 
-a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
+just my Neovim setup — built on [LazyVim](https://lazyvim.github.io).
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.12%2B-ffffff?style=for-the-badge&logo=neovim&logoColor=white&labelColor=111111)](https://github.com/neovim/neovim)
 [![Lua](https://img.shields.io/badge/Lua-5.1%2B-ffffff?style=for-the-badge&logo=lua&logoColor=white&labelColor=111111)](https://www.lua.org/)
@@ -12,9 +12,9 @@ a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
 
 </div>
 
-**RehamVim** is a fast, curated Neovim configuration with deep language
-support. I wanted something fast and simple that just runs without fighting
-my system. That's basically it.
+I wanted something fast and simple that just runs without fighting my system.
+That's basically it. A Neovim config with Go, Rust, TypeScript and Python
+support, a few nice-to-haves, and nothing that gets in your way.
 
 <div align="center">
 
@@ -27,19 +27,19 @@ my system. That's basically it.
 
 </div>
 
-## ○ Highlights
+## ○ What's in it
 
 | | Feature |
 | --- | --- |
-| ○ | **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
-| ○ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
-| ○ | **Curated tooling** — lazygit, telescope, treesitter, dap, lualine. |
-| ○ | **Plug & play** — clone, open, done. Lazy handles the rest. |
+| ○ | **Languages** — Go, Rust, TypeScript and Python, ready to go. |
+| ○ | **Isolated** — a dedicated `rehamvim` binary (Nix) so it doesn't clash with your system Neovim. |
+| ○ | **The usual tools** — lazygit, telescope, treesitter, dap, lualine. |
+| ○ | **Clone, open, done.** Lazy handles the rest. |
 
-## ○ Installation
+## ○ Install
 
-**Prerequisites:** Neovim ≥ 0.12, `git`, `curl`, and the compilers your LSPs
-need (`gcc`, `make`, `clang`).
+You'll need Neovim ≥ 0.12, `git`, `curl`, and the compilers your LSPs need
+(`gcc`, `make`, `clang`).
 
 > [!WARNING]
 > Your current `~/.config/nvim` is backed up — never destroyed.
@@ -56,37 +56,35 @@ bash <(curl -s https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.sh)
 Invoke-WebRequest https://raw.githubusercontent.com/PzN2s/RehamVim/main/install.ps1 -UseBasicParsing | Invoke-Expression
 ```
 
-The installer detects your package manager, installs the essentials
-(`ripgrep`, `fd`, `lazygit`, `gh`), and asks which languages you want.
+The installer checks the basics (`ripgrep`, `fd`, `lazygit`, `gh`) and asks
+which languages you want.
 
 > [!NOTE]
-> **Confirmation before every install.** In interactive terminals the installer
-> asks you to confirm each download and install command before it runs — package
-> installs, `git clone`/`pull`, and `apt-get update`. Press `n` to skip any step
-> you don't want. Non-interactive modes bypass the prompts and run straight
-> through, safe for CI.
+> It asks before every install, so nothing happens without you agreeing. In
+> interactive terminals you get a prompt before each package download and
+> clone — press `n` to skip anything. The non-interactive modes skip the
+> prompts, handy for scripts.
 
-Need to inspect before you commit, or diagnose an existing setup?
+Want to look first, or check an existing setup?
 
 ```sh
-# diagnose an existing install without changing anything
+# check the system without changing anything
 bash install.sh --doctor
 
-# preview exactly what will run, executing nothing
+# show what would run, execute nothing
 bash install.sh --dry-run
 
-# non-interactive install (CI / scripting) — no prompts, no confirmation
+# non-interactive install (scripts) — no prompts
 bash install.sh --unattended
 ```
 
-Running without an option starts an interactive install: every package,
-download, and clone is confirmed before it runs.
+Starting it with no options asks you before every download and install.
 
-Removing RehamVim later is a one-liner (config is backed up first):
+To remove it later (config is backed up first):
 
 ```sh
 bash uninstall.sh                  # remove config + data + state + cache
-bash uninstall.sh --remove-langs   # ...and installed language toolchains
+bash uninstall.sh --remove-langs   # ...and the language toolchains
 ```
 
 **Manual**
@@ -96,19 +94,19 @@ git clone https://github.com/PzN2s/RehamVim ~/.config/nvim
 nvim
 ```
 
-Lazy.nvim fetches and configures every plugin on first launch.
+Lazy.nvim pulls in and sets up every plugin on first launch.
 
 ## ○ Nix
 
-Ships a `flake.nix` exposing an isolated `rehamvim` binary — no interference
-with your system Neovim.
+There's a `flake.nix` that gives you an isolated `rehamvim` binary, so it
+won't touch your system Neovim.
 
 ```sh
-# try without installing
+# try it without installing
 nix run github:PzN2s/RehamVim
 ```
 
-Or add it to your flake:
+Or add it to your own flake:
 
 ```nix
 {
@@ -126,7 +124,7 @@ Or add it to your flake:
 > [!NOTE]
 > The config lives in `/nix/store`; `rehamvim` is the entry point.
 
-## ○ Key Bindings
+## ○ Key bindings
 
 | Keys | Action |
 | --- | --- |
@@ -139,9 +137,9 @@ Or add it to your flake:
 | `gcc` | Toggle comment |
 | `<RightMouse>` | Smart context menu |
 
-Full set at `:Telescope keymaps` or `<leader>sk`.
+Everything else is at `:Telescope keymaps` or `<leader>sk`.
 
-## ○ Supported Languages
+## ○ Languages
 
 | Language | LSP | Debug | Test | Format |
 | --- | :---: | :---: | :---: | :---: |
@@ -179,8 +177,8 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 
 ## ○ Contributing
 
-Found a bug or want something better? Open an issue or a pull request. Keep it
-minimal, keep it fast — that's the spirit of this config.
+Found a bug, or want something different? Open an issue or a pull request.
+Keep it small and fast — that's the whole point.
 
 <div align="center">
 
