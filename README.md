@@ -13,8 +13,8 @@ a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
 </div>
 
 **RehamVim** is a fast, curated Neovim configuration with deep language
-support. It installs in seconds, stays out of your way, and gets out of the
-way of the rest of your system.
+support. I wanted something fast and simple that just runs without fighting
+my system. That's basically it.
 
 <div align="center">
 
