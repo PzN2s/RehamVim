@@ -17,6 +17,10 @@ That's basically it. A Neovim config with Go, Rust, Java, Kotlin, C/C++,
 TypeScript, Python and more, a few nice-to-haves, and nothing that gets in
 your way.
 
+It started as a fork of [SamoulyVim](https://github.com/sam0uly/SamoulyVim),
+and since then it's been reorganized, given a wider set of languages, and
+packaged as an isolated Nix binary that won't touch your system Neovim.
+
 <div align="center">
 
 <a href="image.png"><img src="image.png" width="48%" alt="RehamVim — dashboard"></a>
