@@ -61,7 +61,7 @@ jobs:
 
       - name: Verify nvim runs
         run: |
-          sudo -u testuser HOME=/home/testuser /home/testuser/.config/nvim/../nvim --version || true
+          sudo -u testuser HOME=/home/testuser nvim --version || true
 
       - name: Run uninstaller (dry-run)
         run: |

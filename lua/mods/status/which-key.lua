@@ -7,7 +7,7 @@ return {
     opts = {
       spec = {
         { "<leader>t", group = "terminal" }, -- Labels your new terminal group
-        { "<leader>T", group = "test" }, -- Labels your new terminal group
+        { "<leader>T", group = "test" }, -- Labels your test group
         { "<leader>P", group = "plugins" },
       },
     },

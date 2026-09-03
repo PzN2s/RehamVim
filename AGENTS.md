@@ -105,7 +105,7 @@ plugin/data dir, so **the data dir is unified too**: `~/.local/share/rehamvim ->
 ~/.local/share/nvim`. This is REQUIRED so mason's language servers (lua-ls,
 gopls, rust-analyzer...) are visible from every entry point — a separate
 `rehamvim` store silently lacks the servers and LSP never attaches there
-(`:RehamBugDeltaHealth` shows `LSP clients: NONE`). Plain `nvim` remains the
+(check with `:LspInfo` — it shows `LSP clients: NONE`). Plain `nvim` remains the
 primary entry.
 
 ### Colorscheme persistence

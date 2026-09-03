@@ -51,8 +51,8 @@ vim.keymap.set("n", "<leader>uC", function()
     lines[#lines + 1] = name
   end
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-  vim.api.nvim_buf_set_option(buf, "modifiable", false)
-  vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].bufhidden = "wipe"
 
   local win = vim.api.nvim_open_win(buf, true, {
     relative = "editor",
@@ -65,7 +65,7 @@ vim.keymap.set("n", "<leader>uC", function()
     title = " Colorscheme ",
     title_pos = "center",
   })
-  vim.api.nvim_win_set_option(win, "cursorline", true)
+  vim.wo[win].cursorline = true
   vim.cmd.stopinsert()
 
   local ns = vim.api.nvim_create_namespace("reham_theme_picker")
