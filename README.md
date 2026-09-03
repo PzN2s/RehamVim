@@ -13,8 +13,9 @@ just my Neovim setup — built on [LazyVim](https://lazyvim.github.io).
 </div>
 
 I wanted something fast and simple that just runs without fighting my system.
-That's basically it. A Neovim config with Go, Rust, TypeScript and Python
-support, a few nice-to-haves, and nothing that gets in your way.
+That's basically it. A Neovim config with Go, Rust, Java, Kotlin, C/C++,
+TypeScript, Python and more, a few nice-to-haves, and nothing that gets in
+your way.
 
 <div align="center">
 
@@ -31,7 +32,7 @@ support, a few nice-to-haves, and nothing that gets in your way.
 
 | | Feature |
 | --- | --- |
-| ○ | **Languages** — Go, Rust, TypeScript and Python, ready to go. |
+| ○ | **Languages** — Go, Rust, Java, Kotlin, C/C++, TypeScript, Python, Vue, HTML/CSS, Lua, Nix, Bash, YAML, JSON, TOML, Markdown. |
 | ○ | **Isolated** — a dedicated `rehamvim` binary (Nix) so it doesn't clash with your system Neovim. |
 | ○ | **The usual tools** — lazygit, telescope, treesitter, dap, lualine. |
 | ○ | **Clone, open, done.** Lazy handles the rest. |
@@ -141,12 +142,22 @@ Everything else is at `:Telescope keymaps` or `<leader>sk`.
 
 ## ○ Languages
 
-| Language | LSP | Debug | Test | Format |
-| --- | :---: | :---: | :---: | :---: |
+| Language       | LSP | Debug | Test | Format |
+| ---            | :---: | :---: | :---: | :---: |
 | Go             | ☑ | ☑ | ☑ | ☑ |
 | Rust           | ☑ | ☑ | ☑ | ☑ |
+| C / C++        | ☑ | ☑ | ☑ | ☑ |
+| Java           | ☑ | ○ | ○ | ☑ |
+| Kotlin         | ☑ | ○ | ○ | ☑ |
 | TypeScript / JS| ☑ | ○ | ○ | ☑ |
 | Python         | ☑ | ○ | ○ | ☑ |
+| Vue            | ☑ | ○ | ○ | ☑ |
+| Lua            | ☑ | ○ | ○ | ☑ |
+| Nix            | ☑ | ○ | ○ | ☑ |
+| Bash / Shell   | ☑ | ○ | ○ | ○ |
+| HTML / CSS     | ☑ | ○ | ○ | ☑ |
+| YAML / JSON / TOML | ☑ | ○ | ○ | ☑ |
+| Markdown       | ☑ | ○ | ○ | ○ |
 
 ## ○ Layout
 
