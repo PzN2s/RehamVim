@@ -12,10 +12,9 @@ a quiet, personal Neovim — built on [LazyVim](https://lazyvim.github.io).
 
 </div>
 
-**RehamVim** is a fast, curated Neovim configuration with a suite of
-twenty-three hand-built monochrome colorschemes and deep language support. It
-installs in seconds, stays out of your way, and gets out of the way of the
-rest of your system.
+**RehamVim** is a fast, curated Neovim configuration with deep language
+support. It installs in seconds, stays out of your way, and gets out of the
+way of the rest of your system.
 
 <div align="center">
 
@@ -23,6 +22,8 @@ rest of your system.
 <a href="iage.png"><img src="iage.png" width="48%" alt="RehamVim — editing"></a>
 <br><br>
 <a href="imge.png"><img src="imge.png" width="96%" alt="RehamVim — full setup"></a>
+<br><br>
+<a href="Colorscheme.png"><img src="Colorscheme.png" width="96%" alt="RehamVim — colorscheme"></a>
 
 </div>
 
@@ -30,53 +31,10 @@ rest of your system.
 
 | | Feature |
 | --- | --- |
-| ○ | **Reham theme family** — twenty-three hand-built colorschemes, nothing third-party. |
 | ○ | **Deep language support** — Go, Rust, TypeScript, Python out of the box. |
 | ○ | **Isolated install** — a dedicated `rehamvim` binary (Nix), zero clashes. |
 | ○ | **Curated tooling** — lazygit, telescope, treesitter, dap, lualine. |
 | ○ | **Plug & play** — clone, open, done. Lazy handles the rest. |
-
-## ○ Reham theme family
-
-Twenty-three hand-built colorschemes share one consistent UI mapping — they differ
-only in hue, so every surface, LSP diagnostic, and plugin menu stays put when you
-switch. The **base family** is high-contrast and low-saturation; the **black
-family** sits on a pure `#000000` background and gives text, files, and syntax
-more distinct colors:
-
-| Theme | Vibe |
-| --- | --- |
-| `reham_mist` | Quiet monochrome cool grey (default, matches the desktop chrome) |
-| `reham_forest` | Calm sage greens, soft pine accent |
-| `reham_dawn` | Warm midnight-coffee sepia, molasses accent |
-| `reham_ocean` | Deep navy with sky-cyan highlights |
-| `reham_ember` | Muted rose dusk on warm charcoal |
-| `reham_violet` | Deep indigo with lavender highlights |
-| `reham_void` | Pure black, classic blue/violet code colors |
-| `reham_obsidian` | Pure black, warm retro embers |
-| `reham_graphite` | Pure black, neutral teal & mint |
-| `reham_quantum` | Pure black, vivid modern-IDE multicolor |
-| `reham_ink` | Pure black, editorial white-forward, gold accents |
-| `reham_dracula` | Pure black, classic Dracula purple/cyan/pink |
-| `reham_nord` | Pure black, the beloved Nord blue-slate |
-| `reham_sakura` | Pure black, cherry-blossom pinks & lilac |
-| `reham_amber` | Pure black, retro amber & olive glow |
-| `reham_mint` | Pure black, fresh mint & coral |
-| `reham_aubergine` | Pure black, deep eggplant with iris & lilac |
-| `reham_synth` | Pure black, retro synthwave neon |
-| `reham_solarized` | Pure black, Solarized Dark |
-| `reham_teal` | Pure black, calm teal-dominant |
-| `reham_ruby` | Pure black, warm ruby-red |
-| `reham_matcha` | Pure black, calm matcha-green |
-| `reham_peach` | Pure black, warm apricot & peach |
-
-Pick one any time with `<leader>uC` or `:colorscheme <name>`. Your choice is
-remembered for next session. Only the Reham family actually switches colors —
-third-party colorscheme plugins are removed, the ones LazyVim bundles
-(tokyonight, catppuccin) are disabled, Neovim's built-in themes are shadowed in
-`colors/` as silent no-ops, and every theme picker (the `<leader>uC` menu,
-snacks' live-preview picker, Telescope) is filtered to `reham_*` only.
-`default` (Neovim's baseline) is exempt — plugins restore to it internally.
 
 ## ○ Installation
 
@@ -198,7 +156,7 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 ~/.config/nvim
 ├── init.lua              # entry point
 ├── flake.nix             # isolated rehamvim binary
-├── colors/               # Reham theme family (23 hand-built themes)
+├── colors/               # 23 themes
 ├── lua/
 │   ├── boot/             # startup wiring
 │   │   ├── loader.lua    # lazy.nvim bootstrap + mods.* imports
@@ -210,7 +168,7 @@ Full set at `:Telescope keymaps` or `<leader>sk`.
 │   ├── lib/              # shared utils
 │   └── mods/             # plugin specs by domain
 │       ├── view/         # dashboard, tree, telescope, trouble, menu
-│       ├── status/       # lualine, which-key, colorscheme
+│       ├── status/       # lualine, which-key
 │       ├── edit/         # markdown, refactoring, markview
 │       ├── langs/        # self-contained per-language modules
 │       ├── vcs/          # lazygit, gh-dash, godoc
