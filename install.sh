@@ -386,14 +386,14 @@ else
 fi
 
 # 2. Languages (interactive)
+LANG_CHOICES="Go
+Rust
+Node.js
+Python"
+
 if command -v fzf >/dev/null 2>&1 && [ -t 0 ] && [ $UNATTENDED -eq 0 ]; then
-  languages=("Go:go" "Rust:rustup" "Node.js:nodejs" "Python:python3")
-  say "Select languages to install (TAB/Space to select, Enter to continue, Esc to skip):"
-  selected=$(printf '%s\n' "${languages[@]}" | fzf --multi --header "Languages for LSPs" \
-    --color=fg:#d0d0d0,bg:#121212,hl:#5f87af \
-    --color=fg+:#d0d0d0,bg+:#262626,hl+:#5fd7ff \
-    --color=info:#afaf87,prompt:#d7005f,pointer:#af5fff \
-    --color=marker:#87ff00,spinner:#af5fff,header:#87afaf || true)
+  say "Pick languages to install (TAB/Space to select, Enter to continue, Esc to skip):"
+  selected=$(printf '%s\n' "$LANG_CHOICES" | fzf --multi || true)
   if [ -n "$selected" ]; then
     mapfile -t sel_names <<<"$selected"
     lang_pkgs=()
