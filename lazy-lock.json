@@ -10,6 +10,7 @@
   "cord.nvim": { "branch": "master", "commit": "85f295e43550bc968b66d95d8bfd6e12bb17df08" },
   "crates.nvim": { "branch": "main", "commit": "b8281be336498035f9288d6542b2881a7140a9ec" },
   "dial.nvim": { "branch": "master", "commit": "f2634758455cfa52a8acea6f142dcd6271a1bf57" },
+  "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "flash.nvim": { "branch": "main", "commit": "5f0f270fdc7c5b0c21d903ee85b9cb06f2ac636a" },
   "friendly-snippets": { "branch": "main", "commit": "30bfd475adadfd4f286f86168831348dfd8aecdc" },
   "gh-dash.nvim": { "branch": "main", "commit": "57806a9941055cec1240be225ccffea32fccae65" },

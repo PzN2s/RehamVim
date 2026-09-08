@@ -17,7 +17,8 @@ return {
               words = words + 1
             end
           end
-          vim.notify(string.format("Words: %d", words), vim.log.levels.INFO)
+          local minutes = math.max(1, math.floor(words / 200 + 0.5))
+          vim.notify(string.format("Words: %d · %d min read", words, minutes), vim.log.levels.INFO)
         end,
         desc = "Count Words",
       },

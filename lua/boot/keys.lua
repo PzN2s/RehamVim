@@ -94,6 +94,7 @@ vim.keymap.set("n", "<leader>uC", function()
 
   local function apply()
     pcall(vim.api.nvim_win_close, win, true)
+    vim.g.reham_theme_mode = nil
     vim.cmd.colorscheme(themes[idx])
   end
 
