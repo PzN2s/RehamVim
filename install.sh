@@ -15,7 +15,6 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 
 say()  { printf '%b\n' "${CYAN}[RehamVim]${RESET} $*"; }
@@ -198,11 +197,13 @@ install_pkgs() {
   fi
   local pkgs_txt="${pkgs[*]}"
   say "Installing: $pkgs_txt"
+  # shellcheck disable=SC2086  # multi-word PM_INSTALL by design
   if ! confirm_cmd $PM_INSTALL "${pkgs[@]}"; then
     warn "Skipping $pkgs_txt"
     for p in "${pkgs[@]}"; do record_skipped "$p"; done
     return 0
   fi
+  # shellcheck disable=SC2086  # multi-word PM_INSTALL by design
   if run $PM_INSTALL "${pkgs[@]}"; then
     ok "$pkgs_txt installed"
     for p in "${pkgs[@]}"; do record_installed "$p"; done
@@ -221,7 +222,9 @@ install_pkgs() {
     echo
     case "$retry" in
       r|R)
+        # shellcheck disable=SC2086  # multi-word PM_INSTALL by design
         if confirm_cmd $PM_INSTALL "${pkgs[@]}"; then
+          # shellcheck disable=SC2086  # multi-word PM_INSTALL by design
           if run $PM_INSTALL "${pkgs[@]}"; then
             ok "$pkgs_txt installed (retry)"
             for p in "${pkgs[@]}"; do record_installed "$p"; done
@@ -260,20 +263,31 @@ check_binary() {
 
 install_core_deps() {
   local pkgs=()
-  for bin in git curl fzf ripgrep fd lazygit gh; do
+  for bin in git curl fzf ripgrep; do
     if ! command -v "$bin" >/dev/null 2>&1; then
       pkgs+=("$bin")
     fi
   done
+
   if ! command -v fd >/dev/null 2>&1 && ! command -v fdfind >/dev/null 2>&1; then
     case "$PM_SEARCH" in
-      *paru*|*yay*|*pacman*) pkgs+=("fd") ;;
-      *dpkg*)  pkgs+=("fd-find") ;;
-      *rpm*)   pkgs+=("fd-find") ;;
-      *xbps*)  pkgs+=("fd") ;;
+      *paru*|*yay*|*pacman*|*xbps*) pkgs+=("fd") ;;
+      *dpkg*|*rpm*)                 pkgs+=("fd-find") ;;
     esac
   fi
-  install_pkgs "${pkgs[@]}"
+
+  if ! command -v lazygit >/dev/null 2>&1; then
+    pkgs+=("lazygit")
+  fi
+
+  if ! command -v gh >/dev/null 2>&1; then
+    case "$PM_SEARCH" in
+      *paru*|*yay*|*pacman*) pkgs+=("github-cli") ;;
+      *)                     pkgs+=("gh") ;;
+    esac
+  fi
+
+  install_pkgs "${pkgs[@]}" || warn "Some core tools could not be installed — continuing."
 }
 
 install_neovim() {
@@ -447,7 +461,10 @@ else
         c|C) die "Cancelled." ;;
         b|B)
           backup="${CONFIG_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
-          run cp -r "$CONFIG_DIR" "$backup" && ok "Backup created: $backup" || die "Backup failed."
+          if ! run cp -r "$CONFIG_DIR" "$backup"; then
+            die "Backup failed."
+          fi
+          ok "Backup created: $backup"
           run rm -rf "$CONFIG_DIR" ;;
         o|O) run rm -rf "$CONFIG_DIR" ;;
         *) die "Invalid option." ;;

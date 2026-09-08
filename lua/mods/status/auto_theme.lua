@@ -40,18 +40,16 @@ vim.api.nvim_create_autocmd("VimEnter", {
     if vim.g.reham_theme_mode == "auto" then
       env()
     end
+    local function tick()
+      if vim.g.reham_theme_mode == "auto" then
+        env()
+      end
+      local t = vim.uv.new_timer()
+      t:start(30 * 60 * 1000, 30 * 60 * 1000, vim.schedule_wrap(tick))
+    end
+    tick()
   end,
 })
-
-local id
-local function tick()
-  if vim.g.reham_theme_mode == "auto" then
-    env()
-  end
-  id = vim.uv.new_timer()
-  id:start(30 * 60 * 1000, 30 * 60 * 1000, vim.schedule_wrap(tick))
-end
-tick()
 
 return {
   {

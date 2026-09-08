@@ -6,7 +6,7 @@ function M.toggle()
   local enabled = not vim.g.reham_typewriter
   vim.g.reham_typewriter = enabled
   vim.opt.scrolloff = enabled and 999 or 8
-  vim.opt.relativenumber = enabled and false or true
+  vim.wo[0].relativenumber = not enabled
   if enabled then
     vim.api.nvim_create_autocmd("CursorMoved", {
       group = group,

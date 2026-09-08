@@ -39,34 +39,29 @@ jobs:
               dnf install -y git curl sudo bash fzf ;;
           esac
 
-      - name: Create test user
-        run: |
-          useradd -m -s /bin/bash testuser
-          echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
       - name: Run installer (dry-run)
         run: |
           cd RehamVim
-          sudo -u testuser HOME=/home/testuser bash install.sh --dry-run
+          bash install.sh --dry-run
 
       - name: Run installer (doctor)
         run: |
           cd RehamVim
-          sudo -u testuser HOME=/home/testuser bash install.sh --doctor || true
+          bash install.sh --doctor || true
 
       - name: Run installer (unattended)
         run: |
           cd RehamVim
-          sudo -u testuser HOME=/home/testuser bash install.sh --unattended
+          bash install.sh --unattended
 
       - name: Verify nvim runs
         run: |
-          sudo -u testuser HOME=/home/testuser nvim --version || true
+          nvim --version || true
 
       - name: Run uninstaller (dry-run)
         run: |
           cd RehamVim
-          sudo -u testuser HOME=/home/testuser bash uninstall.sh --dry-run
+          bash uninstall.sh --dry-run
 
   test-flake:
     name: Nix Flake Build
@@ -78,9 +73,9 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v12
       - name: Build flake
-        run: nix build .#rehamvim
+        run: nix build .
       - name: Run nvim from flake
-        run: ./result/bin/nvim --headless "+lua print('flake ok')" +qa
+        run: ./result/bin/rehamvim --headless "+lua print('flake ok')" +qa
 
   lint:
     name: Lint Shell Scripts
