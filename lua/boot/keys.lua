@@ -1,0 +1,197 @@
+---@type LazyVimConfig
+
+for _, lhs in ipairs({ "<leader>l", "<leader>L" }) do
+  if vim.fn.maparg(vim.keycode(lhs), "n") ~= "" then
+    vim.keymap.del("n", lhs)
+  end
+end
+
+vim.keymap.set("n", "<leader>Pl", "<cmd>Lazy<cr>", { desc = "Lazy" })
+vim.keymap.set("n", "<leader>PL", "<cmd>LazyExtras<cr>", { desc = "Lazy Extras" })
+vim.keymap.set("n", "<leader>Pc", "<cmd>lua LazyVim.news.changelog()<cr>", { desc = "LazyVim Changelog" })
+vim.keymap.set("n", "<leader>Pp", function()
+  local profile = require("boot.profile")
+  local items = profile.available()
+  vim.ui.select(items, { prompt = "Select Profile: " }, function(choice)
+    if choice then
+      profile.set_manual(choice)
+    end
+  end)
+end, { desc = "Switch Profile" })
+vim.keymap.set("n", "<leader>Pb", function()
+  require("lib.utils").bootstrap_project()
+end, { desc = "Bootstrap Project" })
+
+vim.keymap.set("n", "<leader>uC", function()
+  local active = vim.g.colors_name or ""
+  local themes = vim.tbl_filter(function(name)
+    return name:match("^reham_")
+  end, vim.fn.getcompletion("", "color"))
+  table.sort(themes)
+  if #themes == 0 then
+    return
+  end
+
+  local idx = vim.fn.index(themes, active) + 1
+  if idx < 1 then
+    idx = 1
+  end
+
+  local total = #themes
+  local winh = math.min(total, 15)
+  local maxw = 0
+  for _, name in ipairs(themes) do
+    maxw = math.max(maxw, #name)
+  end
+  local width = maxw + 5
+
+  local buf = vim.api.nvim_create_buf(false, true)
+  local lines = {}
+  for _, name in ipairs(themes) do
+    lines[#lines + 1] = name
+  end
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].bufhidden = "wipe"
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    style = "minimal",
+    width = width,
+    height = winh,
+    row = math.floor(vim.o.lines / 2 - winh / 2),
+    col = math.floor(vim.o.columns / 2 - width / 2),
+    border = "rounded",
+    title = " Colorscheme ",
+    title_pos = "center",
+  })
+  vim.wo[win].cursorline = true
+  vim.cmd.stopinsert()
+
+  local ns = vim.api.nvim_create_namespace("reham_theme_picker")
+  local marker
+  local function render()
+    if marker then
+      vim.api.nvim_buf_del_extmark(buf, ns, marker)
+    end
+    marker = vim.api.nvim_buf_set_extmark(buf, ns, idx - 1, 0, {
+      virt_text = { { "▸ ", "Special" } },
+      virt_text_pos = "inline",
+      hl_mode = "combine",
+    })
+  end
+
+  local function move(delta)
+    idx = ((idx - 1 + delta) % total) + 1
+    render()
+    vim.api.nvim_win_set_cursor(win, { idx, 0 })
+  end
+
+  local function close()
+    pcall(vim.api.nvim_win_close, win, true)
+    pcall(vim.api.nvim_buf_delete, buf, { force = true })
+  end
+
+  local function apply()
+    pcall(vim.api.nvim_win_close, win, true)
+    vim.g.reham_theme_mode = nil
+    vim.cmd.colorscheme(themes[idx])
+  end
+
+  local function keyspec(lhs, fn)
+    for _, mode in ipairs({ "n", "i" }) do
+      vim.keymap.set(mode, lhs, fn, { buffer = buf, nowait = true, silent = true })
+    end
+  end
+  keyspec("<Down>", function()
+    move(1)
+  end)
+  keyspec("j", function()
+    move(1)
+  end)
+  keyspec("<Up>", function()
+    move(-1)
+  end)
+  keyspec("k", function()
+    move(-1)
+  end)
+  keyspec("<CR>", function()
+    apply()
+  end)
+  keyspec("<Esc>", function()
+    close()
+  end)
+  keyspec("q", function()
+    close()
+  end)
+
+  render()
+  vim.api.nvim_win_set_cursor(win, { idx, 0 })
+end, { desc = "Pick colorscheme" })
+
+vim.keymap.set("n", "<leader>cx", function()
+  require("lib.utils").run_code()
+end, { desc = "Run Code" })
+
+vim.keymap.set({ "n", "v", "i" }, "<leader>cp", "<cmd>OpenSmartMenu<cr>", {
+  desc = "Open context menu",
+})
+
+vim.keymap.set({ "n", "v", "i" }, "<RightMouse>", function()
+  local mousepos = vim.fn.getmousepos()
+
+  if mousepos.screenrow == 1 then
+    return vim.cmd.exec('"normal! \\<RightMouse>"')
+  end
+
+  if mousepos.winid == 0 then
+    return vim.cmd.exec('"normal! \\<RightMouse>"')
+  end
+
+  local buf = vim.api.nvim_win_get_buf(mousepos.winid)
+  local ft = vim.bo[buf].filetype
+
+  if ft == "snacks_dashboard" or ft == "alpha" or ft == "dashboard" then
+    return vim.cmd.exec('"normal! \\<RightMouse>"')
+  end
+
+  local ok_menu, _ = pcall(require, "menu.utils")
+  if ok_menu then
+    require("menu.utils").delete_old_menus()
+  end
+
+  vim.cmd.exec('"normal! \\<RightMouse>"')
+
+  vim.cmd("OpenSmartMenu")
+end, { desc = "Right click menu" })
+
+-- Buffer navigation (native equivalents; bufferline.nvim stays disabled).
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+vim.keymap.set("n", "[B", "<cmd>bfirst<cr>", { desc = "First Buffer" })
+vim.keymap.set("n", "]B", "<cmd>blast<cr>", { desc = "Last Buffer" })
+
+-- Open current file/line in the browser (needs `gh` auth for private repos).
+vim.keymap.set({ "n", "x" }, "<leader>gB", function()
+  Snacks.gitbrowse.open()
+end, { desc = "Open in Browser" })
+
+-- Buffer close + window maximize (LazyVim core lacks these here).
+vim.keymap.set("n", "<leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
+vim.keymap.set("n", "<leader>wm", function()
+  if vim.t.maximized then
+    vim.cmd("wincmd =")
+    vim.t.maximized = false
+  else
+    vim.cmd("wincmd |")
+    vim.cmd("wincmd _")
+    vim.t.maximized = true
+  end
+end, { desc = "Maximize Window" })
+
+-- Debug-print variable under cursor (refactoring.nvim).
+vim.keymap.set("n", "<leader>rv", function()
+  require("refactoring").debug.print_var({})
+end, { desc = "Debug Print Var" })

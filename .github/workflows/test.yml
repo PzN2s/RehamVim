@@ -1,0 +1,57 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stylua
+        run: |
+          curl -sL https://github.com/JohnnyMorganz/StyLua/releases/download/v2.3.1/stylua-linux-x86_64.zip -o /tmp/stylua.zip
+          unzip -o /tmp/stylua.zip -d /tmp
+          sudo mv /tmp/stylua /usr/local/bin/stylua
+
+      - name: stylua check
+        run: stylua --check lua/ colors/
+
+      - name: codespell
+        run: |
+          pip install codespell --quiet
+          codespell lua/ colors/ install.sh uninstall.sh README.md
+
+  startup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Neovim
+        run: |
+          curl -sL https://github.com/neovim/neovim/releases/download/v0.12.4/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz
+          tar xzf /tmp/nvim.tar.gz -C /tmp
+          sudo ln -sf /tmp/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+          nvim --version | head -n 1
+
+      - name: Lua syntax check (every file must parse)
+        run: |
+          nvim --headless +"lua local bad = 0; for _, f in ipairs(vim.fn.globpath('.', 'lua/**/*.lua', false, true)) do if loadfile(f) == nil then print('SYNTAX FAIL: ' .. f); bad = bad + 1 end end; for _, f in ipairs(vim.fn.globpath('colors', '*.lua', false, true)) do if loadfile(f) == nil then print('SYNTAX FAIL: ' .. f); bad = bad + 1 end end; print(bad == 0 and 'all lua files parse OK' or (bad .. ' files broken')); os.exit(bad == 0 and 0 or 1)" +qa! 2>&1 | tail -n 2
+
+      - name: Colorscheme load check (family themes apply cleanly)
+        run: |
+          failed=0
+          for theme in $(ls colors/reham_*.lua | sed 's|colors/||; s|\.lua$||'); do
+            if nvim --headless -u NONE --cmd "set rtp+=." +"runtime! colors/$theme.lua" +"lua if vim.g.colors_name ~= '$theme' then os.exit(1) end" +qa! >/dev/null 2>&1; then
+              echo "theme OK: $theme"
+            else
+              echo "THEME FAIL: $theme"
+              failed=1
+            fi
+          done
+          exit $failed
+
+      - name: Installer dry run
+        run: bash install.sh --dry-run >/dev/null && echo "install --dry-run OK"

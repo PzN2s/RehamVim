@@ -1,0 +1,6 @@
+[codespell]
+# noice/ot: plugin name + variable fragment (false positives).
+# teh/adn/recieve/...: intentional inoreabbrev triggers in boot/polish.lua.
+# enew: builtin :enew command.
+# ans: shell variable name in install.sh's prompt.
+ignore-words-list = noice,ot,enew,teh,adn,recieve,seperate,functoin,occured,exmaple,retrun,ans
